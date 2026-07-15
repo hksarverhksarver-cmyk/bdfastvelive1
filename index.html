@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
@@ -8,30 +8,44 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
-        /* আপনার আগের সব CSS এখানে থাকবে */
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: #ffffff; min-height: 100vh; max-width: 480px; margin: 0 auto; padding-bottom: 90px; overflow-x: hidden; }
-        .header { background: linear-gradient(135deg, #1a7a2e 0%, #145a22 100%); padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 300; box-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+
+        .header { 
+            background: linear-gradient(135deg, #1a7a2e 0%, #145a22 100%); 
+            padding: 12px 20px; display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 300; box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
         .logo-box { display: flex; align-items: center; gap: 10px; }
         .site-logo { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #fff; object-fit: cover; background: #000; }
         .logo-text { font-size: 18px; font-weight: 800; color: #fff; }
+
         .player-container { width: 100%; background: #000; aspect-ratio: 16/9; position: relative; border-bottom: 3px solid #1a7a2e; }
         video { width: 100%; height: 100%; }
-        #status-bar { position: absolute; bottom: 0; left: 0; width: 100%; background: rgba(0, 0, 0, 0.8); padding: 8px 15px; display: none; align-items: center; gap: 10px; z-index: 10; border-top: 1px solid rgba(26, 122, 46, 0.5); }
-        #status-bar img { width: 25px; height: 25px; border-radius: 50%; border: 1px solid #fff; }
+        
+        #status-bar {
+            position: absolute; bottom: 0; left: 0; width: 100%;
+            background: rgba(0, 0, 0, 0.8); padding: 8px 15px;
+            display: none; align-items: center; gap: 10px; z-index: 10;
+        }
         #status-bar span { font-size: 13px; font-weight: 600; color: #00ff00; }
+
         .category-tabs { padding: 15px; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
         .cat-tab { padding: 8px 18px; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid #2a2a2a; background: #1a1a1a; color: #888; cursor: pointer; white-space: nowrap; transition: 0.3s; }
         .cat-tab.active { background: #1a7a2e; color: #fff; border-color: transparent; }
+
         .channel-grid { padding: 0 16px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
         .channel-card { background: #141414; border: 1px solid #1e1e1e; border-radius: 12px; padding: 15px 5px; text-align: center; cursor: pointer; position: relative; min-height: 115px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .live-tag { position: absolute; top: 6px; right: 6px; background: #ff2222; color: #fff; font-size: 7px; padding: 2px 5px; border-radius: 4px; font-weight: 900; animation: blink 1s infinite; }
         @keyframes blink { 50% { opacity: 0.6; } }
-        .ch-thumb { width: 55px; height: 55px; margin-bottom: 8px; }
+        
+        .ch-thumb { width: 55px; height: 55px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; }
         .ch-thumb img { max-width: 100%; max-height: 100%; object-fit: contain; }
         .ch-name { font-size: 10px; font-weight: 700; color: #eee; text-transform: uppercase; }
+
         .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: #0f0f0f; display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #222; z-index: 400; }
         .nav-item { color: #666; text-align: center; font-size: 10px; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .nav-item.active { color: #1a7a2e; }
     </style>
 </head>
 <body>
@@ -46,15 +60,15 @@
 
     <div class="player-container">
         <div id="status-bar">
-            <img src="https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/SomoyTV.png" alt="Logo">
             <span id="now-playing">চ্যানেল সিলেক্ট করুন</span>
         </div>
-        <video id="video" controls autoplay playsinline poster="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR0N-9L7R8N-q-A1fA_7YV2J4Jj6z4L-Q-vWw&s"></video>
+        <video id="video" controls autoplay playsinline poster="https://i.ibb.co/vYf0YfK/poster.png"></video>
     </div>
 
     <div class="category-tabs" id="tabs">
         <button class="cat-tab active" onclick="filterChannels('All', this)">সব চ্যানেল</button>
         <button class="cat-tab" onclick="filterChannels('News', this)">সংবাদ</button>
+        <button class="cat-tab" onclick="filterChannels('Sports', this)">খেলাধুলা</button>
     </div>
 
     <div class="channel-grid" id="channelGrid"></div>
@@ -67,20 +81,23 @@
     <script>
         lucide.createIcons();
 
-        // ১. আপনার সঠিক Worker লিঙ্কটি এখানে দিন (অবশ্যই শেষে ?url= থাকবে)
-        const proxy = "https://আপনার-লিঙ্ক-এখানে.workers.dev/?url="; 
+        // আপনার সঠিক প্রক্সি লিঙ্ক সেট করে দেওয়া হয়েছে
+        const proxy = "https://bdfast-proxy.sksunnysong143.workers.dev/?url="; 
 
         const channels = [
-            // টেস্ট চ্যানেল: এটি দিয়ে চেক করুন প্রক্সি কাজ করছে কি না
-            { name: "Test Channel", cat: "News", logo: "https://via.placeholder.com/50?text=TEST", url: proxy + "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" },
-            { name: "Somoy TV", cat: "News", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/SomoyTV.png", url: proxy + "https://raw.githubusercontent.com/thebeastv/BDTV/main/Streams/SomoyTV.m3u8" },
-            { name: "Independent", cat: "News", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/IndependentTV.png", url: proxy + "https://live.itvbd.com/hls/itv_720p.m3u8" }
+            { name: "Test Stream", cat: "News", logo: "https://via.placeholder.com/50?text=Test", url: proxy + "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" },
+            { name: "Somoy TV", cat: "News", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/SomoyTV.png", url: proxy + "https://somoytv-live.shofat.com/somoy/index.m3u8" },
+            { name: "Jamuna TV", cat: "News", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/JamunaTV.png", url: proxy + "https://jamunatv-live.shofat.com/jamuna/index.m3u8" },
+            { name: "Independent", cat: "News", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/IndependentTV.png", url: proxy + "https://live.itvbd.com/hls/itv_720p.m3u8" },
+            { name: "T Sports", cat: "Sports", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/TSports.png", url: proxy + "https://tsports-live.shofat.com/tsports/index.m3u8" },
+            { name: "GTV Live", cat: "News", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/GTV.png", url: proxy + "https://gtv-live.shofat.com/gtv/index.m3u8" }
         ];
 
         const grid = document.getElementById('channelGrid');
         const video = document.getElementById('video');
         const statusBar = document.getElementById('status-bar');
         const nowPlayingText = document.getElementById('now-playing');
+        let hls = null;
 
         function displayChannels(filter) {
             grid.innerHTML = '';
@@ -89,27 +106,39 @@
                     const card = document.createElement('div');
                     card.className = 'channel-card';
                     card.onclick = () => playChannel(ch.url, ch.name);
-                    card.innerHTML = `<span class="live-tag">LIVE</span><div class="ch-thumb"><img src="${ch.logo}"></div><div class="ch-name">${ch.name}</div>`;
+                    card.innerHTML = `<span class="live-tag">LIVE</span><div class="ch-thumb"><img src="${ch.logo}" onerror="this.src='https://via.placeholder.com/50?text=TV'"></div><div class="ch-name">${ch.name}</div>`;
                     grid.appendChild(card);
                 }
             });
         }
 
+        function filterChannels(cat, btn) {
+            displayChannels(cat);
+            document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
         function playChannel(url, name) {
-            if (url.includes("আপনার-লিঙ্ক-এখানে")) { alert("দয়া করে আগে আপনার প্রক্সি লিঙ্কটি কোডে বসান!"); return; }
             statusBar.style.display = 'flex';
             nowPlayingText.innerText = "এখন চলছে: " + name;
+            
+            if (hls) { hls.destroy(); }
+
             if (Hls.isSupported()) {
-                const hls = new Hls();
+                hls = new Hls();
                 hls.loadSource(url);
                 hls.attachMedia(video);
                 hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
+                hls.on(Hls.Events.ERROR, function (event, data) {
+                    if (data.fatal) { console.error("HLS Error:", data); }
+                });
             } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
                 video.src = url;
                 video.play();
             }
             window.scrollTo({top: 0, behavior: 'smooth'});
         }
+
         displayChannels('All');
     </script>
 </body>

@@ -8,6 +8,7 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
+        /* আপনার আগের সব CSS এখানে থাকবে */
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: #ffffff; min-height: 100vh; max-width: 480px; margin: 0 auto; padding-bottom: 90px; overflow-x: hidden; }
         .header { background: linear-gradient(135deg, #1a7a2e 0%, #145a22 100%); padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 300; box-shadow: 0 2px 10px rgba(0,0,0,0.5); }
@@ -20,28 +21,24 @@
         #status-bar img { width: 25px; height: 25px; border-radius: 50%; border: 1px solid #fff; }
         #status-bar span { font-size: 13px; font-weight: 600; color: #00ff00; }
         .category-tabs { padding: 15px; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
-        .category-tabs::-webkit-scrollbar { display: none; }
         .cat-tab { padding: 8px 18px; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid #2a2a2a; background: #1a1a1a; color: #888; cursor: pointer; white-space: nowrap; transition: 0.3s; }
-        .cat-tab.active { background: #1a7a2e; color: #fff; border-color: transparent; box-shadow: 0 4px 10px rgba(26, 122, 46, 0.3); }
-        .section-title { padding: 5px 20px 12px; font-size: 15px; font-weight: 700; color: #eee; display: flex; align-items: center; gap: 8px; }
+        .cat-tab.active { background: #1a7a2e; color: #fff; border-color: transparent; }
         .channel-grid { padding: 0 16px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-        .channel-card { background: #141414; border: 1px solid #1e1e1e; border-radius: 12px; padding: 15px 5px; text-align: center; cursor: pointer; position: relative; transition: 0.2s; min-height: 115px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .channel-card:active { transform: scale(0.95); background: #1a7a2e; }
+        .channel-card { background: #141414; border: 1px solid #1e1e1e; border-radius: 12px; padding: 15px 5px; text-align: center; cursor: pointer; position: relative; min-height: 115px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .live-tag { position: absolute; top: 6px; right: 6px; background: #ff2222; color: #fff; font-size: 7px; padding: 2px 5px; border-radius: 4px; font-weight: 900; animation: blink 1s infinite; }
         @keyframes blink { 50% { opacity: 0.6; } }
-        .ch-thumb { width: 55px; height: 55px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; }
+        .ch-thumb { width: 55px; height: 55px; margin-bottom: 8px; }
         .ch-thumb img { max-width: 100%; max-height: 100%; object-fit: contain; }
-        .ch-name { font-size: 10px; font-weight: 700; color: #eee; line-height: 1.2; text-transform: uppercase; }
+        .ch-name { font-size: 10px; font-weight: 700; color: #eee; text-transform: uppercase; }
         .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: #0f0f0f; display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #222; z-index: 400; }
-        .nav-item { color: #666; text-align: center; font-size: 10px; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 4px; font-weight: 600; }
-        .nav-item.active { color: #1a7a2e; }
+        .nav-item { color: #666; text-align: center; font-size: 10px; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 4px; }
     </style>
 </head>
 <body>
 
     <div class="header">
         <div class="logo-box">
-            <img src="https://i.postimg.cc/9FpxS7GZ/1721035501309.png" class="site-logo" alt="Logo">
+            <img src="https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/SomoyTV.png" class="site-logo" alt="Logo">
             <div class="logo-text">BD FAST TV</div>
         </div>
         <i data-lucide="search" style="color:white; width:20px;"></i>
@@ -49,53 +46,35 @@
 
     <div class="player-container">
         <div id="status-bar">
-            <img src="https://i.postimg.cc/9FpxS7GZ/1721035501309.png" alt="Logo">
+            <img src="https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/SomoyTV.png" alt="Logo">
             <span id="now-playing">চ্যানেল সিলেক্ট করুন</span>
         </div>
-        <video id="video" controls autoplay playsinline poster="https://i.postimg.cc/9FpxS7GZ/1721035501309.png"></video>
+        <video id="video" controls autoplay playsinline poster="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR0N-9L7R8N-q-A1fA_7YV2J4Jj6z4L-Q-vWw&s"></video>
     </div>
 
     <div class="category-tabs" id="tabs">
         <button class="cat-tab active" onclick="filterChannels('All', this)">সব চ্যানেল</button>
         <button class="cat-tab" onclick="filterChannels('News', this)">সংবাদ</button>
-        <button class="cat-tab" onclick="filterChannels('Sports', this)">খেলাধুলা</button>
-        <button class="cat-tab" onclick="filterChannels('Entertainment', this)">বিনোদন</button>
-        <button class="cat-tab" onclick="filterChannels('Music', this)">গান</button>
     </div>
 
-    <div class="section-title">
-        <i data-lucide="play-circle" style="color: #1a7a2e; width: 18px;"></i> <span id="secTitle">All Channels</span>
-    </div>
-    
     <div class="channel-grid" id="channelGrid"></div>
 
     <div class="bottom-nav">
         <a href="#" class="nav-item active"><i data-lucide="home"></i> হোম</a>
-        <a href="#" class="nav-item"><i data-lucide="tv"></i> লাইভ টিভি</a>
-        <a href="#" class="nav-item"><i data-lucide="layout-grid"></i> ক্যাটাগরি</a>
         <a href="#" class="nav-item" onclick="location.reload()"><i data-lucide="refresh-cw"></i> রিলোড</a>
     </div>
 
     <script>
         lucide.createIcons();
 
-        // --- আপনার প্রক্সি লিঙ্কটি এখানে বসান ---
-        const proxy = "আপনার_ওয়ার্কার_লিঙ্ক_এখানে/?url="; 
-        
-        const siteLogo = "https://i.postimg.cc/9FpxS7GZ/1721035501309.png";
-        let hls = null;
+        // ১. আপনার সঠিক Worker লিঙ্কটি এখানে দিন (অবশ্যই শেষে ?url= থাকবে)
+        const proxy = "https://আপনার-লিঙ্ক-এখানে.workers.dev/?url="; 
 
         const channels = [
-            { name: "Somoy TV", cat: "News", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/SomoyTV.png", url: proxy + "https://somoytv-live.shofat.com/somoy/index.m3u8" },
-            { name: "Jamuna TV", cat: "News", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/JamunaTV.png", url: proxy + "https://jamunatv-live.shofat.com/jamuna/index.m3u8" },
-            { name: "Ekattor TV", cat: "News", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/71TV.png", url: proxy + "https://ekattor-live.shofat.com/ekattor/index.m3u8" },
-            { name: "Independent", cat: "News", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/IndependentTV.png", url: proxy + "https://live.itvbd.com/hls/itv_720p.m3u8" },
-            { name: "T Sports", cat: "Sports", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/TSports.png", url: proxy + "https://tsports-live.shofat.com/tsports/index.m3u8" },
-            { name: "GTV Live", cat: "Entertainment", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/GTV.png", url: proxy + "https://gtv-live.shofat.com/gtv/index.m3u8" },
-            { name: "Sangeet Bangla", cat: "Music", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/SangeetBangla.png", url: proxy + "https://sb.shofat.com/sb/index.m3u8" },
-            { name: "Sony Ten 1", cat: "Sports", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/SonyTen1.png", url: proxy + "https://sonyten1-live.shofat.com/sonyten1/index.m3u8" },
-            { name: "News24", cat: "News", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/News24.png", url: proxy + "https://news24-live.shofat.com/news24/index.m3u8" },
-            { name: "DBC News", cat: "News", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/DBCNews.png", url: proxy + "https://dbcnews-live.shofat.com/dbcnews/index.m3u8" }
+            // টেস্ট চ্যানেল: এটি দিয়ে চেক করুন প্রক্সি কাজ করছে কি না
+            { name: "Test Channel", cat: "News", logo: "https://via.placeholder.com/50?text=TEST", url: proxy + "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" },
+            { name: "Somoy TV", cat: "News", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/SomoyTV.png", url: proxy + "https://raw.githubusercontent.com/thebeastv/BDTV/main/Streams/SomoyTV.m3u8" },
+            { name: "Independent", cat: "News", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/IndependentTV.png", url: proxy + "https://live.itvbd.com/hls/itv_720p.m3u8" }
         ];
 
         const grid = document.getElementById('channelGrid');
@@ -105,31 +84,23 @@
 
         function displayChannels(filter) {
             grid.innerHTML = '';
-            document.getElementById('secTitle').innerText = filter === 'All' ? 'সব চ্যানেল' : filter + " Channels";
             channels.forEach(ch => {
                 if (filter === 'All' || ch.cat === filter) {
                     const card = document.createElement('div');
                     card.className = 'channel-card';
                     card.onclick = () => playChannel(ch.url, ch.name);
-                    card.innerHTML = `<span class="live-tag">LIVE</span><div class="ch-thumb"><img src="${ch.logo}" onerror="this.src='https://via.placeholder.com/50?text=TV'"></div><div class="ch-name">${ch.name}</div>`;
+                    card.innerHTML = `<span class="live-tag">LIVE</span><div class="ch-thumb"><img src="${ch.logo}"></div><div class="ch-name">${ch.name}</div>`;
                     grid.appendChild(card);
                 }
             });
         }
 
-        function filterChannels(cat, btn) {
-            displayChannels(cat);
-            document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-        }
-
         function playChannel(url, name) {
-            if (!url || url.includes("undefined")) { alert("প্রক্সি লিঙ্ক সেট করুন!"); return; }
+            if (url.includes("আপনার-লিঙ্ক-এখানে")) { alert("দয়া করে আগে আপনার প্রক্সি লিঙ্কটি কোডে বসান!"); return; }
             statusBar.style.display = 'flex';
             nowPlayingText.innerText = "এখন চলছে: " + name;
-            if (hls) { hls.destroy(); }
             if (Hls.isSupported()) {
-                hls = new Hls();
+                const hls = new Hls();
                 hls.loadSource(url);
                 hls.attachMedia(video);
                 hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());

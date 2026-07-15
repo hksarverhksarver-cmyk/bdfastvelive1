@@ -2,102 +2,66 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BD FAST TV - Live</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BD FAST TV V5.0</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: sans-serif; background: #0a0a0a; color: #fff; max-width: 480px; margin: 0 auto; padding-bottom: 30px; }
-        
-        /* হেডার ডিজাইন */
-        .header { 
-            background: linear-gradient(to right, #1a7a2e, #145a22); 
-            padding: 15px; text-align: center; font-size: 22px; font-weight: 800; 
-            letter-spacing: 1px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); 
-        }
-        
-        /* ভিডিও প্লেয়ার */
-        .player-box { width: 100%; aspect-ratio: 16/9; background: #000; border-bottom: 3px solid #1a7a2e; }
-        video { width: 100%; height: 100%; display: block; }
-        
-        #status { color: #00ff00; font-size: 14px; margin: 10px 0; font-weight: bold; text-align: center; height: 20px; }
-
-        /* চ্যানেল গ্রিড */
-        .channel-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 15px; }
-        .channel-card { 
-            background: #181818; border-radius: 12px; padding: 15px 5px; 
-            text-align: center; cursor: pointer; border: 1px solid #333; transition: 0.2s; 
-        }
-        .channel-card:active { transform: scale(0.92); background: #1a7a2e; }
-        
-        .thumb { width: 55px; height: 55px; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; background: #fff; border-radius: 50%; padding: 5px; }
-        .thumb img { max-width: 100%; max-height: 100%; object-fit: contain; }
-        
-        .name { font-size: 11px; font-weight: 700; color: #eee; text-transform: uppercase; }
+        body { margin: 0; background: #000; color: #fff; font-family: sans-serif; text-align: center; }
+        .header { background: #1a7a2e; padding: 15px; font-size: 20px; font-weight: bold; }
+        video { width: 100%; aspect-ratio: 16/9; background: #111; border-bottom: 2px solid #1a7a2e; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 15px; }
+        .card { background: #181818; padding: 10px; border-radius: 8px; cursor: pointer; border: 1px solid #333; }
+        .card img { width: 45px; height: 45px; border-radius: 50%; object-fit: contain; background: #fff; }
+        .card div { font-size: 11px; margin-top: 5px; font-weight: bold; }
+        #status { color: #0f0; margin: 10px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div class="header">BD FAST TV</div>
+<div class="header">BD FAST TV <span style="font-size: 10px;">V5.0</span></div>
+<video id="video" controls autoplay playsinline poster="https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/SomoyTV.png"></video>
+<div id="status">চ্যানেল সিলেক্ট করুন</div>
 
-    <div class="player-box">
-        <video id="video" controls autoplay playsinline poster="https://i.ibb.co/L5fX0Gg/BD-FAST-TV-Logo.png"></video>
-    </div>
+<div class="grid" id="grid"></div>
 
-    <div id="status">চ্যানেল সিলেক্ট করুন</div>
+<script>
+    // আপনার প্রক্সি লিঙ্ক
+    const proxy = "https://bdfast-proxy.sksunnysong143.workers.dev/?url=";
 
-    <div class="channel-grid" id="channelGrid"></div>
+    const channels = [
+        { name: "Test Stream", logo: "https://via.placeholder.com/100/1a7a2e/ffffff?text=TEST", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" },
+        { name: "Somoy TV", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/SomoyTV.png", url: "https://somoytv-live.shofat.com/somoy/index.m3u8" },
+        { name: "Jamuna TV", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/JamunaTV.png", url: "https://jamunatv-live.shofat.com/jamuna/index.m3u8" },
+        { name: "Independent", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/IndependentTV.png", url: "https://live.itvbd.com/hls/itv_720p.m3u8" },
+        { name: "T Sports", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/TSports.png", url: "https://tsports-live.shofat.com/tsports/index.m3u8" }
+    ];
 
-    <script>
-        // আপনার নিশ্চিত করা প্রক্সি লিঙ্ক
-        const proxy = "https://bdfast-proxy.sksunnysong143.workers.dev/?url=";
+    const video = document.getElementById('video');
+    const grid = document.getElementById('grid');
+    const status = document.getElementById('status');
+    let hls = null;
 
-        const channels = [
-            { name: "Test Stream", logo: "https://via.placeholder.com/150/1a7a2e/FFFFFF?text=LIVE", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" },
-            { name: "Somoy TV", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/SomoyTV.png", url: "https://somoytv-live.shofat.com/somoy/index.m3u8" },
-            { name: "Jamuna TV", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/JamunaTV.png", url: "https://jamunatv-live.shofat.com/jamuna/index.m3u8" },
-            { name: "Independent", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/IndependentTV.png", url: "https://live.itvbd.com/hls/itv_720p.m3u8" },
-            { name: "T Sports", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/TSports.png", url: "https://tsports-live.shofat.com/tsports/index.m3u8" },
-            { name: "GTV Live", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/GTV.png", url: "https://gtv-live.shofat.com/gtv/index.m3u8" }
-        ];
-
-        const grid = document.getElementById('channelGrid');
-        const video = document.getElementById('video');
-        const status = document.getElementById('status');
-        let hls = null;
-
-        function displayChannels() {
-            channels.forEach(ch => {
-                const card = document.createElement('div');
-                card.className = 'channel-card';
-                card.onclick = () => playChannel(ch.url, ch.name);
-                card.innerHTML = `
-                    <div class="thumb"><img src="${ch.logo}" onerror="this.src='https://via.placeholder.com/50?text=TV'"></div>
-                    <div class="name">${ch.name}</div>
-                `;
-                grid.appendChild(card);
-            });
-        }
-
-        function playChannel(url, name) {
-            status.innerText = "প্লে হচ্ছে: " + name;
-            const finalUrl = proxy + encodeURIComponent(url);
-
-            if (hls) { hls.destroy(); }
-
+    channels.forEach(ch => {
+        const div = document.createElement('div');
+        div.className = 'card';
+        div.onclick = () => {
+            status.innerText = "প্লে হচ্ছে: " + ch.name;
+            const fullUrl = proxy + encodeURIComponent(ch.url);
+            if (hls) hls.destroy();
             if (Hls.isSupported()) {
                 hls = new Hls();
-                hls.loadSource(finalUrl);
+                hls.loadSource(fullUrl);
                 hls.attachMedia(video);
                 hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
-            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                video.src = finalUrl;
+            } else {
+                video.src = fullUrl;
                 video.play();
             }
-            window.scrollTo({top: 0, behavior: 'smooth'});
-        }
-
-        displayChannels();
-    </script>
+            window.scrollTo(0,0);
+        };
+        div.innerHTML = `<img src="${ch.logo}" onerror="this.src='https://via.placeholder.com/50?text=TV'"><div>${ch.name}</div>`;
+        grid.appendChild(div);
+    });
+</script>
 </body>
 </html>

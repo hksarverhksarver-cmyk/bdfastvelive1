@@ -7,34 +7,33 @@
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0a0a0a; color: #fff; max-width: 480px; margin: 0 auto; padding-bottom: 90px; }
-        .header { background: #1a7a2e; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 300; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
-        .site-logo { width: 35px; height: 35px; border-radius: 50%; border: 2px solid #fff; }
-        .player-container { width: 100%; background: #000; aspect-ratio: 16/9; position: sticky; top: 59px; z-index: 200; }
+        body { font-family: 'Arial', sans-serif; background: #050505; color: #fff; max-width: 480px; margin: 0 auto; padding-bottom: 90px; }
+        .header { background: #1a7a2e; padding: 15px; display: flex; align-items: center; justify-content: center; position: sticky; top: 0; z-index: 300; box-shadow: 0 2px 10px rgba(0,0,0,0.8); }
+        .site-logo { width: 35px; height: 35px; border-radius: 50%; border: 2px solid #fff; margin-right: 10px; }
+        .player-container { width: 100%; background: #000; aspect-ratio: 16/9; position: sticky; top: 65px; z-index: 200; border-bottom: 2px solid #1a7a2e; }
         video { width: 100%; height: 100%; }
-        .category-tabs { padding: 15px; display: flex; gap: 8px; overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
-        .cat-tab { padding: 8px 18px; border-radius: 20px; border: 1px solid #333; background: #1a1a1a; color: #ccc; cursor: pointer; font-size: 14px; }
+        .category-tabs { padding: 15px; display: flex; gap: 10px; overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
+        .cat-tab { padding: 8px 15px; border-radius: 20px; border: 1px solid #333; background: #111; color: #aaa; cursor: pointer; font-size: 13px; font-weight: bold; }
         .cat-tab.active { background: #1a7a2e; border-color: #1a7a2e; color: #fff; }
-        .channel-grid { padding: 0 10px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .channel-card { background: #1a1a1a; border-radius: 12px; padding: 10px; text-align: center; border: 1px solid #222; cursor: pointer; transition: 0.3s; position: relative;}
-        .channel-card:active { transform: scale(0.95); background: #222; }
-        .ch-thumb { width: 100%; aspect-ratio: 1/1; background: #252525; border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .ch-thumb img { width: 80%; height: 80%; object-fit: contain; }
-        .ch-name { font-size: 11px; font-weight: 600; color: #ddd; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .live-tag { position: absolute; top: 5px; right: 5px; background: #ff2222; color: #fff; font-size: 7px; padding: 2px 5px; border-radius: 4px; font-weight: bold; }
+        .channel-grid { padding: 0 10px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .channel-card { background: #111; border-radius: 12px; padding: 10px; text-align: center; border: 1px solid #222; cursor: pointer; transition: 0.3s; position: relative; }
+        .channel-card:active { transform: scale(0.95); background: #1a7a2e; }
+        .ch-thumb { width: 100%; aspect-ratio: 1/1; background: #000; border-radius: 10px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; padding: 5px; }
+        .ch-thumb img { width: 100%; height: 100%; object-fit: contain; }
+        .ch-name { font-size: 11px; font-weight: bold; color: #eee; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .live-tag { position: absolute; top: 6px; right: 6px; background: #ff0000; color: #fff; font-size: 8px; padding: 2px 5px; border-radius: 4px; font-weight: bold; animation: blink 1.5s infinite; }
+        @keyframes blink { 0% {opacity: 1;} 50% {opacity: 0.5;} 100% {opacity: 1;} }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <div style="display:flex; align-items:center; gap:10px;">
-        <img src="https://i.postimg.cc/mD8zYJ5r/logo.png" class="site-logo" onerror="this.src='https://via.placeholder.com/40'">
-        <div style="font-weight:bold; font-size:18px;">BD FAST TV</div>
-    </div>
+    <img src="https://i.postimg.cc/mD8zYJ5r/logo.png" class="site-logo" onerror="this.src='https://via.placeholder.com/40'">
+    <div style="font-weight:bold; font-size:20px; letter-spacing: 1px;">BD FAST TV</div>
 </div>
 
 <div class="player-container">
-    <video id="video" controls autoplay playsinline poster="https://i.postimg.cc/mD8zYJ5r/logo.png"></video>
+    <video id="video" controls autoplay playsinline></video>
 </div>
 
 <div class="category-tabs">
@@ -48,10 +47,14 @@
 <script>
     const videoElem = document.getElementById('video');
     const channelData = [
-        { name: "Somoy TV", cat: "News", logo: "https://raw.githubusercontent.com/sk-Sabbir/BD_IPTV/main/Logos/SomoyTV.png", url: "https://somoytv-live.shofat.com/somoy/index.m3u8" },
-        { name: "Independent TV", cat: "News", logo: "https://raw.githubusercontent.com/sk-Sabbir/BD_IPTV/main/Logos/IndependentTV.png", url: "https://live.itvbd.com/hls/itv_720p.m3u8" },
-        { name: "Sangeet Bangla", cat: "Music", logo: "https://raw.githubusercontent.com/sk-Sabbir/BD_IPTV/main/Logos/SangeetBangla.png", url: "https://sb.shofat.com/sb/index.m3u8" },
-        { name: "Test Stream (Global)", cat: "All", logo: "https://via.placeholder.com/50?text=TV", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" }
+        { name: "Somoy TV", cat: "News", logo: "https://raw.githubusercontent.com/byte-capsule/sk-Sabbir-BD_IPTV/main/Logos/SomoyTV.png", url: "https://somoytv-live.shofat.com/somoy/index.m3u8" },
+        { name: "Jamuna TV", cat: "News", logo: "https://raw.githubusercontent.com/byte-capsule/sk-Sabbir-BD_IPTV/main/Logos/JamunaTV.png", url: "https://live-jamuna.shofat.com/jamuna/index.m3u8" },
+        { name: "Independent TV", cat: "News", logo: "https://raw.githubusercontent.com/byte-capsule/sk-Sabbir-BD_IPTV/main/Logos/IndependentTV.png", url: "https://live.itvbd.com/hls/itv_720p.m3u8" },
+        { name: "News24", cat: "News", logo: "https://raw.githubusercontent.com/byte-capsule/sk-Sabbir-BD_IPTV/main/Logos/News24.png", url: "https://news24-live.shofat.com/news24/index.m3u8" },
+        { name: "DBC News", cat: "News", logo: "https://raw.githubusercontent.com/byte-capsule/sk-Sabbir-BD_IPTV/main/Logos/DBCNews.png", url: "https://dbcnews-live.shofat.com/dbcnews/index.m3u8" },
+        { name: "Gaan Bangla", cat: "Music", logo: "https://raw.githubusercontent.com/byte-capsule/sk-Sabbir-BD_IPTV/main/Logos/GaanBangla.png", url: "https://gb.shofat.com/gb/index.m3u8" },
+        { name: "Sangeet Bangla", cat: "Music", logo: "https://raw.githubusercontent.com/byte-capsule/sk-Sabbir-BD_IPTV/main/Logos/SangeetBangla.png", url: "https://sb.shofat.com/sb/index.m3u8" },
+        { name: "Test Stream", cat: "All", logo: "https://via.placeholder.com/100?text=Test", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" }
     ];
 
     function render(cat = 'All') {
@@ -62,7 +65,7 @@
                 const card = document.createElement('div');
                 card.className = 'channel-card';
                 card.onclick = () => playStream(item.url);
-                card.innerHTML = `<div class="live-tag">LIVE</div><div class="ch-thumb"><img src="${item.logo}" onerror="this.src='https://via.placeholder.com/50?text=TV'"></div><div class="ch-name">${item.name}</div>`;
+                card.innerHTML = `<div class="live-tag">LIVE</div><div class="ch-thumb"><img src="${item.logo}" alt="${item.name}"></div><div class="ch-name">${item.name}</div>`;
                 grid.appendChild(card);
             }
         });
@@ -73,7 +76,7 @@
             const hls = new Hls();
             hls.loadSource(url);
             hls.attachMedia(videoElem);
-            hls.on(Hls.Events.MANIFEST_PARSED, () => videoElem.play());
+            hls.on(Hls.Events.MANIFEST_PARSED, () => videoElem.play().catch(e => console.log("Auto-play blocked")));
         } else if (videoElem.canPlayType('application/vnd.apple.mpegurl')) {
             videoElem.src = url;
             videoElem.play();
@@ -88,8 +91,7 @@
     }
 
     render();
-    // Play first channel by default
-    playStream(channelData[0].url);
+    playStream(channelData[0].url); // Start with first channel
 </script>
 </body>
 </html>

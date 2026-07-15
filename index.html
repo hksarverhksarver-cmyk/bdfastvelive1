@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BD FAST TV V6.0</title>
+    <title>BD FAST TV V7.0</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
         body { margin: 0; background: #000; color: #fff; font-family: sans-serif; text-align: center; }
@@ -11,28 +11,29 @@
         video { width: 100%; aspect-ratio: 16/9; background: #111; border-bottom: 2px solid #1a7a2e; }
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 15px; }
         .card { background: #181818; padding: 10px; border-radius: 8px; cursor: pointer; border: 1px solid #333; }
-        .card img { width: 45px; height: 45px; border-radius: 50%; object-fit: contain; background: #fff; padding: 5px; }
+        .card img { width: 45px; height: 45px; border-radius: 50%; object-fit: contain; background: #fff; padding: 2px; }
         .card div { font-size: 11px; margin-top: 5px; font-weight: bold; }
-        #status { color: #0f0; margin: 10px; font-weight: bold; min-height: 20px; }
+        #status { color: #0f0; margin: 10px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div class="header">BD FAST TV <span style="font-size: 10px;">V6.0</span></div>
-<video id="video" controls autoplay playsinline poster="https://cdn-icons-png.flaticon.com/512/5833/5833290.png"></video>
+<div class="header">BD FAST TV <span style="font-size: 10px;">V7.0</span></div>
+<video id="video" controls autoplay playsinline poster="https://i.postimg.cc/9FpxS7GZ/1721035501309.png"></video>
 <div id="status">চ্যানেল সিলেক্ট করুন</div>
 
 <div class="grid" id="grid"></div>
 
 <script>
+    // আপনার প্রক্সি লিঙ্ক
     const proxy = "https://bdfast-proxy.sksunnysong143.workers.dev/?url=";
 
     const channels = [
         { name: "Test Stream", logo: "https://cdn-icons-png.flaticon.com/512/716/716429.png", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" },
-        { name: "Somoy TV", logo: "https://cdn.jsdelivr.net/gh/thebeastv/BDTV@main/Logos/SomoyTV.png", url: "https://somoytv-live.shofat.com/somoy/index.m3u8" },
-        { name: "Jamuna TV", logo: "https://cdn.jsdelivr.net/gh/thebeastv/BDTV@main/Logos/JamunaTV.png", url: "https://jamunatv-live.shofat.com/jamuna/index.m3u8" },
-        { name: "Independent", logo: "https://cdn.jsdelivr.net/gh/thebeastv/BDTV@main/Logos/IndependentTV.png", url: "https://live.itvbd.com/hls/itv_720p.m3u8" },
-        { name: "T Sports", logo: "https://cdn.jsdelivr.net/gh/thebeastv/BDTV@main/Logos/TSports.png", url: "https://tsports-live.shofat.com/tsports/index.m3u8" }
+        { name: "Somoy TV", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/SomoyTV.png", url: "https://somoytv-live.shofat.com/somoy/index.m3u8" },
+        { name: "Jamuna TV", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/JamunaTV.png", url: "https://jamunatv-live.shofat.com/jamuna/index.m3u8" },
+        { name: "Independent", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/IndependentTV.png", url: "https://live.itvbd.com/hls/itv_720p.m3u8" },
+        { name: "T Sports", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/TSports.png", url: "https://tsports-live.shofat.com/tsports/index.m3u8" }
     ];
 
     const video = document.getElementById('video');
@@ -44,28 +45,20 @@
         const div = document.createElement('div');
         div.className = 'card';
         div.onclick = () => {
-            status.innerText = "লোডিং: " + ch.name;
+            status.innerText = "প্লে হচ্ছে: " + ch.name;
             const fullUrl = proxy + encodeURIComponent(ch.url);
-            
-            if (hls) { hls.destroy(); }
-            
+            if (hls) hls.destroy();
             if (Hls.isSupported()) {
                 hls = new Hls();
                 hls.loadSource(fullUrl);
                 hls.attachMedia(video);
-                hls.on(Hls.Events.MANIFEST_PARSED, () => {
-                    video.play();
-                    status.innerText = "প্লে হচ্ছে: " + ch.name;
-                });
-                hls.on(Hls.Events.ERROR, function (event, data) {
-                    if (data.fatal) { status.innerText = "এরর: চ্যানেলটি এই মুহূর্তে বন্ধ আছে।"; }
-                });
+                hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
             } else {
                 video.src = fullUrl;
                 video.play();
             }
         };
-        div.innerHTML = `<img src="${ch.logo}" onerror="this.src='https://via.placeholder.com/50?text=TV'"><div>${ch.name}</div>`;
+        div.innerHTML = `<img src="${ch.logo}"><div>${ch.name}</div>`;
         grid.appendChild(div);
     });
 </script>

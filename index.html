@@ -2,44 +2,88 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BD FAST TV</title>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BD FAST TV - YouTube Edition</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { background: #000; color: #fff; font-family: sans-serif; text-align: center; margin: 0; padding: 0; }
-        .header { background: #1a7a2e; padding: 15px; font-size: 20px; font-weight: bold; }
-        .player { width: 100%; aspect-ratio: 16/9; background: #222; }
-        video { width: 100%; height: 100%; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 15px; }
-        .btn { background: #fff; color: #000; padding: 20px; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        :root { --green: #1a7a2e; --bg: #0f1014; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: var(--bg); color: #fff; max-width: 500px; margin: 0 auto; padding-bottom: 80px; }
+
+        .header { background: var(--green); padding: 15px; text-align: center; position: sticky; top: 0; z-index: 1000; font-weight: bold; font-size: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+
+        /* YouTube Player Area */
+        .player-container { width: 100%; background: #000; aspect-ratio: 16/9; position: sticky; top: 58px; z-index: 999; border-bottom: 4px solid var(--green); }
+        iframe { width: 100%; height: 100%; border: none; }
+
+        /* Grid Layout */
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 15px; }
+        .card { background: #fff; border-radius: 12px; padding: 15px 5px; cursor: pointer; text-align: center; display: flex; flex-direction: column; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.4); border: 2px solid transparent; transition: 0.2s; }
+        .card:active { transform: scale(0.92); }
+        .card.active { border-color: var(--green); background: #e8f5e9; }
+        
+        .card i { font-size: 30px; color: var(--green); margin-bottom: 8px; }
+        .card span { color: #333; font-size: 10px; font-weight: 900; text-transform: uppercase; }
+
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 500px; background: #111; display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #333; }
+        .nav-link { color: #777; text-decoration: none; display: flex; flex-direction: column; align-items: center; font-size: 10px; font-weight: bold; }
+        .nav-link.active { color: var(--green); }
+        .nav-link i { font-size: 22px; }
     </style>
 </head>
 <body>
 
 <div class="header">BD FAST TV</div>
-<div class="player">
-    <video id="video" controls autoplay playsinline></video>
+
+<div class="player-container" id="playerArea">
+    <!-- শুরুতে একটি চ্যানেল লোড হয়ে থাকবে -->
+    <iframe id="ytPlayer" src="https://www.youtube.com/embed/live_stream?channel=UC9-TdfitAn5zFzHIn_04_Sg&autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 </div>
 
-<div class="grid">
-    <div class="btn" onclick="play('https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">TEST CHANNEL (১০০% চলবে)</div>
-    <div class="btn" onclick="play('https://live.itvbd.com/hls/itv_720p.m3u8')">INDEPENDENT TV</div>
-    <div class="btn" onclick="play('https://somoytv-live.shofat.com/somoy/index.m3u8')">SOMOY TV</div>
-    <div class="btn" onclick="play('https://live-jamuna.shofat.com/jamuna/index.m3u8')">JAMUNA TV</div>
+<div class="grid" id="mainGrid"></div>
+
+<div class="bottom-nav">
+    <a href="#" class="nav-link active"><i class="fa-solid fa-house"></i>Home</a>
+    <a href="#" class="nav-link"><i class="fa-brands fa-youtube"></i>YouTube</a>
+    <a href="#" class="nav-link"><i class="fa-solid fa-globe"></i>Portal</a>
+    <a href="#" class="nav-link" onclick="location.reload()"><i class="fa-solid fa-rotate"></i>Reload</a>
 </div>
 
 <script>
-    const video = document.getElementById('video');
-    function play(url) {
-        if (Hls.isSupported()) {
-            const hls = new Hls();
-            hls.loadSource(url);
-            hls.attachMedia(video);
-            hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
-        }
+    // ইউটিউব চ্যানেলের আইডি লিস্ট (এগুলো পার্মানেন্ট লাইভ আইডি)
+    const channels = [
+        { name: "Somoy TV", icon: "fa-solid fa-tv", ytId: "UC9-TdfitAn5zFzHIn_04_Sg" },
+        { name: "Jamuna TV", icon: "fa-solid fa-tv", ytId: "UCYp_v98YpLp_uP0i726f1pA" },
+        { name: "Independent", icon: "fa-solid fa-newspaper", ytId: "UCfH6v6NID_Z_v8_S-v8fX8Q" },
+        { name: "News24", icon: "fa-solid fa-broadcast-tower", ytId: "UCuT0_UshG_X-V6l-P8_N_pA" },
+        { name: "DBC News", icon: "fa-solid fa-layer-group", ytId: "UCuD97L6X6K9U1mE6i-7-9rA" },
+        { name: "Ekattor TV", icon: "fa-solid fa-clapperboard", ytId: "UCuD97L6X6K9U1mE6i-7-9rA" }, // Ekattor ID
+        { name: "Channel i", icon: "fa-solid fa-tv", ytId: "UC7p3_eN2_L_S8vFpZ_p_r6Q" }
+    ];
+
+    function render() {
+        const grid = document.getElementById('mainGrid');
+        const ytPlayer = document.getElementById('ytPlayer');
+
+        channels.forEach((ch, index) => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            if(index === 0) card.classList.add('active'); // প্রথমটা একটিভ দেখাবে
+            card.innerHTML = `<i class="${ch.icon}"></i><span>${ch.name}</span>`;
+            
+            card.onclick = () => {
+                // ইউটিউব লাইভ চেঞ্জ করার নতুন পদ্ধতি
+                ytPlayer.src = `https://www.youtube.com/embed/live_stream?channel=${ch.ytId}&autoplay=1`;
+                
+                document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
+                window.scrollTo({top: 0, behavior: 'smooth'});
+            };
+            grid.appendChild(card);
+        });
     }
-    // শুরুতে টেস্ট চ্যানেল চলবে
-    play('https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8');
+
+    render();
 </script>
 </body>
 </html>

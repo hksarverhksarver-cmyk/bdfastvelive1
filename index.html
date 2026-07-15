@@ -3,50 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BD FAST TV - Pro Portal</title>
+    <title>BD FAST TV - Pro</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        :root { --green: #1a7a2e; --bg: #000; --card: #fff; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
-        body { background: var(--bg); color: #fff; max-width: 500px; margin: 0 auto; padding-bottom: 80px; overflow-x: hidden; }
-
+        :root { --primary: #1a7a2e; --bg: #000; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        body { background: var(--bg); color: #fff; max-width: 500px; margin: 0 auto; padding-bottom: 80px; }
+        
         /* Header */
-        .header { background: var(--green); padding: 15px; display: flex; align-items: center; justify-content: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.8); }
-        .header span { font-weight: bold; font-size: 20px; letter-spacing: 1px; color: #fff; }
+        .header { background: var(--primary); padding: 12px; text-align: center; position: sticky; top: 0; z-index: 1000; font-weight: bold; font-size: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.5); }
 
-        /* Player */
-        .player-box { width: 100%; background: #000; aspect-ratio: 16/9; position: sticky; top: 58px; z-index: 999; border-bottom: 3px solid var(--green); }
-        video { width: 100%; height: 100%; background: #000; }
-        #status { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.8); padding: 5px 12px; border-radius: 5px; font-size: 11px; font-weight: bold; color: #00ff00; border: 1px solid var(--green); z-index: 10; }
+        /* Player Box */
+        .player-box { width: 100%; background: #000; aspect-ratio: 16/9; position: sticky; top: 48px; z-index: 999; border-bottom: 3px solid var(--primary); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        video { width: 100%; height: 100%; }
+        
+        #status { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.8); padding: 5px 12px; border-radius: 5px; font-size: 11px; font-weight: bold; color: #00ff00; border: 1px solid var(--primary); z-index: 10; }
 
-        /* Grid Like Hridoy TV */
+        /* Grid */
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 15px; }
-        .card { background: var(--card); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; align-items: center; padding: 12px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.5); border: 2px solid transparent; position: relative; }
+        .card { background: #fff; border-radius: 12px; display: flex; flex-direction: column; align-items: center; padding: 12px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.5); border: 2px solid transparent; position: relative; }
         .card:active { transform: scale(0.92); }
-        .card.active { border-color: var(--green); background: #e8f5e9; }
+        .card.active { border-color: var(--primary); background: #e8f5e9; }
         
-        .card .logo-box { width: 100%; height: 50px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; }
-        .card img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .logo-box { width: 100%; height: 50px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; }
+        .logo-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
         
-        .card span { color: #222; font-size: 10px; font-weight: 900; text-align: center; text-transform: uppercase; width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .live-dot { position: absolute; top: 5px; right: 5px; width: 6px; height: 6px; background: red; border-radius: 50%; animation: blink 1s infinite; }
-        @keyframes blink { 0% {opacity: 1} 50% {opacity: 0.3} 100% {opacity: 1} }
+        .card span { color: #222; font-size: 10px; font-weight: 800; text-align: center; text-transform: uppercase; width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .live-dot { position: absolute; top: 6px; right: 6px; width: 6px; height: 6px; background: red; border-radius: 50%; }
 
-        /* Bottom Nav */
+        /* Bottom Menu */
         .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 500px; background: #111; display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #333; z-index: 1000; }
-        .nav-item { color: #666; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; font-weight: bold; }
-        .nav-item.active { color: var(--green); }
-        .nav-item i { font-size: 22px; }
+        .nav-item { color: #777; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; font-weight: bold; }
+        .nav-item.active { color: var(--primary); }
     </style>
 </head>
 <body>
 
-<div class="header"><span>BD FAST TV</span></div>
+<div class="header">BD FAST TV</div>
 
 <div class="player-box">
     <div id="status">চ্যানেল সিলেক্ট করুন</div>
-    <video id="video" controls autoplay playsinline poster="https://i.postimg.cc/mD8zYJ5r/logo.png"></video>
+    <video id="video" controls autoplay playsinline></video>
 </div>
 
 <div class="grid" id="mainGrid"></div>
@@ -62,19 +60,19 @@
     const video = document.getElementById('video');
     const statusBox = document.getElementById('status');
 
-    // নির্ভরযোগ্য লোগো এবং চ্যানেলের তালিকা
+    // নতুন এবং সচল লোগো লিঙ্ক (CDN ব্যবহার করা হয়েছে)
     const channels = [
-        { name: "Somoy TV", logo: "https://raw.githubusercontent.com/byte-capsule/sk-Sabbir-BD_IPTV/main/Logos/SomoyTV.png", url: "https://somoytv-live.shofat.com/somoy/index.m3u8" },
-        { name: "Jamuna TV", logo: "https://raw.githubusercontent.com/byte-capsule/sk-Sabbir-BD_IPTV/main/Logos/JamunaTV.png", url: "https://live-jamuna.shofat.com/jamuna/index.m3u8" },
-        { name: "Independent", logo: "https://raw.githubusercontent.com/byte-capsule/sk-Sabbir-BD_IPTV/main/Logos/IndependentTV.png", url: "https://live.itvbd.com/hls/itv_720p.m3u8" },
-        { name: "T Sports", logo: "https://raw.githubusercontent.com/byte-capsule/sk-Sabbir-BD_IPTV/main/Logos/TSports.png", url: "https://tsports-live.shofat.com/tsports/index.m3u8" },
-        { name: "Ekattor TV", logo: "https://raw.githubusercontent.com/byte-capsule/sk-Sabbir-BD_IPTV/main/Logos/EkattorTV.png", url: "https://ekattor-live.shofat.com/ekattortv/index.m3u8" },
-        { name: "GTV Live", logo: "https://raw.githubusercontent.com/byte-capsule/sk-Sabbir-BD_IPTV/main/Logos/GTV.png", url: "https://gtv-live.shofat.com/gtv/index.m3u8" },
-        { name: "News24", logo: "https://raw.githubusercontent.com/byte-capsule/sk-Sabbir-BD_IPTV/main/Logos/News24.png", url: "https://news24-live.shofat.com/news24/index.m3u8" },
-        { name: "Test Stream", logo: "https://via.placeholder.com/100/ffffff/000000?text=OK", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" }
+        { name: "Somoy TV", logo: "https://cdn.jsdelivr.net/gh/byte-capsule/sk-Sabbir-BD_IPTV@main/Logos/SomoyTV.png", url: "https://somoytv-live.shofat.com/somoy/index.m3u8" },
+        { name: "Jamuna TV", logo: "https://cdn.jsdelivr.net/gh/byte-capsule/sk-Sabbir-BD_IPTV@main/Logos/JamunaTV.png", url: "https://live-jamuna.shofat.com/jamuna/index.m3u8" },
+        { name: "Independent", logo: "https://cdn.jsdelivr.net/gh/byte-capsule/sk-Sabbir-BD_IPTV@main/Logos/IndependentTV.png", url: "https://live.itvbd.com/hls/itv_720p.m3u8" },
+        { name: "T Sports", logo: "https://cdn.jsdelivr.net/gh/byte-capsule/sk-Sabbir-BD_IPTV@main/Logos/TSports.png", url: "https://tsports-live.shofat.com/tsports/index.m3u8" },
+        { name: "Ekattor TV", logo: "https://cdn.jsdelivr.net/gh/byte-capsule/sk-Sabbir-BD_IPTV@main/Logos/EkattorTV.png", url: "https://ekattor-live.shofat.com/ekattortv/index.m3u8" },
+        { name: "GTV Live", logo: "https://cdn.jsdelivr.net/gh/byte-capsule/sk-Sabbir-BD_IPTV@main/Logos/GTV.png", url: "https://gtv-live.shofat.com/gtv/index.m3u8" },
+        { name: "News24", logo: "https://cdn.jsdelivr.net/gh/byte-capsule/sk-Sabbir-BD_IPTV@main/Logos/News24.png", url: "https://news24-live.shofat.com/news24/index.m3u8" },
+        { name: "Test Stream", logo: "https://via.placeholder.com/100?text=OK", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" }
     ];
 
-    function render() {
+    function init() {
         const grid = document.getElementById('mainGrid');
         channels.forEach((ch) => {
             const card = document.createElement('div');
@@ -82,20 +80,21 @@
             card.innerHTML = `
                 <div class="live-dot"></div>
                 <div class="logo-box">
-                    <img src="${ch.logo}" alt="${ch.name}" onerror="this.src='https://via.placeholder.com/100?text=TV'">
+                    <img src="${ch.logo}" alt="${ch.name}" onerror="this.src='https://via.placeholder.com/100?text=${ch.name}'">
                 </div>
                 <span>${ch.name}</span>
             `;
             card.onclick = () => {
-                play(ch.url, ch.name);
+                playChannel(ch.url, ch.name);
                 document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
                 card.classList.add('active');
             };
             grid.appendChild(card);
         });
+        playChannel(channels[0].url, channels[0].name); // অটো প্রথম চ্যানেল চলবে
     }
 
-    function play(url, name) {
+    function playChannel(url, name) {
         statusBox.innerText = `Connecting ${name}...`;
         statusBox.style.color = "#ffcc00";
 
@@ -104,19 +103,18 @@
             hls.loadSource(url);
             hls.attachMedia(video);
             hls.on(Hls.Events.MANIFEST_PARSED, () => {
-                video.play().catch(() => { statusBox.innerText = "Play Button চাপুন"; });
+                video.play().catch(() => { statusBox.innerText = "Play চাপুন"; });
                 statusBox.innerText = `● ${name} WORKING`;
                 statusBox.style.color = "#00ff00";
             });
             hls.on(Hls.Events.ERROR, () => {
-                statusBox.innerText = "সার্ভার ব্যস্ত বা ব্লক";
+                statusBox.innerText = "সার্ভার ব্লক অথবা নেটওয়ার্ক সমস্যা";
                 statusBox.style.color = "#ff4444";
             });
         }
     }
 
-    render();
-    play(channels[0].url, channels[0].name); // অটো প্রথম চ্যানেল
+    init();
 </script>
 </body>
 </html>

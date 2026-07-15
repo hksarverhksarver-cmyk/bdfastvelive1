@@ -2,143 +2,172 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MOVIE LINK BD - Clone</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BD FAST TV - Live Channels</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
-        :root { --red: #ff3131; --bg: #121212; --card-bg: #1e1e1e; --green: #2ecc71; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background: var(--bg); color: #fff; max-width: 600px; margin: 0 auto; padding-bottom: 50px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: #ffffff; min-height: 100vh; max-width: 480px; margin: 0 auto; padding-bottom: 90px; overflow-x: hidden; }
 
-        /* Header Section */
-        .header { text-align: center; padding: 20px; }
-        .site-title { font-size: 35px; font-weight: 900; color: var(--red); text-transform: uppercase; letter-spacing: -1px; }
-        .notice { font-size: 11px; background: rgba(255,255,255,0.1); padding: 10px; border-radius: 5px; margin-top: 10px; border-left: 3px solid var(--red); }
+        /* হেডার ও সাইট লোগো স্টাইল */
+        .header { 
+            background: linear-gradient(135deg, #1a7a2e 0%, #145a22 100%); 
+            padding: 12px 20px; 
+            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 300;
+        }
+        .logo-box { display: flex; align-items: center; gap: 12px; }
+        .site-logo { 
+            width: 45px; height: 45px; border-radius: 50%; 
+            border: 2px solid #fff; object-fit: cover; background: #000;
+        }
+        .logo-text { font-size: 18px; font-weight: 800; color: #fff; }
+        .logo-text span { color: #90ee90; }
 
-        /* Domain Buttons */
-        .domain-links { display: flex; justify-content: center; gap: 5px; margin: 15px 0; flex-wrap: wrap; }
-        .domain-btn { padding: 5px 12px; border-radius: 5px; font-size: 10px; font-weight: bold; text-decoration: none; color: #fff; background: #444; }
-        .domain-btn.new { background: #777; }
-        .domain-btn.active { background: #00bcd4; }
+        /* ভিডিও প্লেয়ার */
+        .player-container { width: 100%; background: #000; aspect-ratio: 16/9; border-bottom: 2px solid #1a7a2e; }
+        video { width: 100%; height: 100%; background: #000; }
 
-        /* Category Buttons */
-        .categories { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 10px; }
-        .cat-btn { padding: 8px; border-radius: 5px; border: none; font-size: 11px; font-weight: bold; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; text-decoration: none; }
+        /* ট্যাব স্টাইল */
+        .category-tabs { padding: 15px; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+        .category-tabs::-webkit-scrollbar { display: none; }
+        .cat-tab { padding: 8px 18px; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid #2a2a2a; background: transparent; color: #888; cursor: pointer; white-space: nowrap; transition: 0.3s; }
+        .cat-tab.active { background: #1a7a2e; color: #fff; border-color: transparent; }
+
+        .section-title { padding: 5px 20px 12px; font-size: 16px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 8px; }
         
-        /* Search Bar */
-        .search-container { padding: 10px 15px; display: flex; gap: 5px; }
-        #searchBox { flex: 1; padding: 12px; border-radius: 5px 0 0 5px; border: none; background: #252525; color: #fff; outline: none; }
-        .search-btn { background: #00bcd4; border: none; padding: 0 15px; border-radius: 0 5px 5px 0; color: #fff; cursor: pointer; }
+        /* চ্যানেল গ্রিড */
+        .channel-grid { padding: 0 16px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .channel-card { background: #141414; border: 1px solid #1e1e1e; border-radius: 12px; padding: 15px 5px; text-align: center; cursor: pointer; position: relative; transition: 0.2s; min-height: 110px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .channel-card:active { transform: scale(0.95); background: #1f1f1f; }
+        
+        .live-tag { position: absolute; top: 6px; right: 6px; background: #ff2222; color: #fff; font-size: 7px; padding: 2px 5px; border-radius: 4px; font-weight: 900; }
+        .ch-thumb { width: 50px; height: 50px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .ch-thumb img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .ch-name { font-size: 10px; font-weight: 600; color: #ddd; line-height: 1.2; }
 
-        /* Movie Grid */
-        .movie-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 15px; }
-        .movie-card { background: var(--card-bg); border-radius: 8px; overflow: hidden; position: relative; border: 1px solid #333; }
-        .movie-card img { width: 100%; aspect-ratio: 2/3; object-fit: cover; }
-        
-        .badge-top { position: absolute; top: 5px; left: 5px; background: #ffc107; color: #000; font-size: 9px; font-weight: bold; padding: 2px 6px; border-radius: 3px; }
-        .quality-tag { position: absolute; top: 5px; right: 5px; background: #007bff; color: #fff; font-size: 9px; padding: 2px 6px; border-radius: 3px; }
-        .view-count { position: absolute; bottom: 80px; right: 10px; background: rgba(0,0,0,0.7); font-size: 10px; padding: 2px 6px; border-radius: 10px; display: flex; align-items: center; gap: 4px; }
-        
-        .movie-info { padding: 10px; text-align: center; }
-        .movie-lang { font-size: 9px; background: var(--green); color: #000; padding: 2px 6px; border-radius: 3px; font-weight: bold; display: inline-block; margin-bottom: 5px; }
-        .movie-title { font-size: 12px; font-weight: bold; color: #eee; height: 35px; overflow: hidden; }
-        .movie-time { font-size: 10px; color: #888; margin-top: 5px; }
+        /* বটম নেভিগেশন */
+        .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: #111; display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #222; z-index: 400; }
+        .nav-item { color: #555; text-align: center; font-size: 10px; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .nav-item.active { color: #1a7a2e; }
+        .nav-item i { width: 18px; height: 18px; }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <div class="site-title">MOVIELINKBD</div>
-    <div class="notice">
-        Official & Always Active Link: MovieLinkBD.com ✅<br>
-        <small>যদি সাইট লোড না হয়, 1.1.1.1 VPN ব্যবহার করুন।</small>
+    <div class="header">
+        <div class="logo-box">
+            <!-- এখানে আপনার লোগোটির ডিরেক্ট লিঙ্ক বসান -->
+            <img src="https://i.ibb.co/L5pS0yD/site-logo.png" class="site-logo" alt="Logo">
+            <div class="logo-text">BD FAST <span>TV</span></div>
+        </div>
+        <i data-lucide="search" style="color:white; width:20px;"></i>
     </div>
-</div>
 
-<div class="domain-links">
-    <a href="#" class="domain-btn new">NEW</a>
-    <a href="#" class="domain-btn active">.ONE</a>
-    <a href="#" class="domain-btn">.WORK</a>
-    <a href="#" class="domain-btn" style="background:#ffc107; color:#000;">.SHOP</a>
-</div>
+    <div class="player-container">
+        <!-- ভিডিওর ওপর পোস্টার হিসেবেও আপনার লোগো থাকবে -->
+        <video id="video" controls autoplay playsinline poster="https://i.ibb.co/L5pS0yD/site-logo.png"></video>
+    </div>
 
-<div class="categories">
-    <a href="#" class="cat-btn" style="background:#d32f2f;"><i class="fa-solid fa-house"></i> HOME</a>
-    <a href="#" class="cat-btn" style="background:#2e7d32;"><img src="https://flagcdn.com/w20/bd.png" width="15"> BANGLA</a>
-    <a href="#" class="cat-btn" style="background:#1976d2;"><i class="fa-solid fa-microphone"></i> DUBBED</a>
-</div>
+    <div class="category-tabs" id="tabs">
+        <button class="cat-tab active" onclick="filterChannels('All', this)">All</button>
+        <button class="cat-tab" onclick="filterChannels('News', this)">News</button>
+        <button class="cat-tab" onclick="filterChannels('Sports', this)">Sports</button>
+        <button class="cat-tab" onclick="filterChannels('Entertainment', this)">Entertainment</button>
+        <button class="cat-tab" onclick="filterChannels('Music', this)">Music</button>
+    </div>
 
-<div class="search-container">
-    <input type="text" id="searchBox" placeholder="সার্চ করে খুঁজে নিন পছন্দের মুভি..." onkeyup="searchMovie()">
-    <button class="search-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
-</div>
+    <div class="section-title">
+        <i data-lucide="tv" style="color: #1a7a2e; width: 18px;"></i> <span id="secTitle">All Channels</span>
+    </div>
+    
+    <div class="channel-grid" id="channelGrid"></div>
 
-<div class="movie-grid" id="movieList">
-    <!-- মুভিগুলো এখানে অটোমেটিক লোড হবে -->
-</div>
+    <div class="bottom-nav">
+        <a href="#" class="nav-item active"><i data-lucide="home"></i> হোম</a>
+        <a href="#" class="nav-item"><i data-lucide="search"></i> খুঁজুন</a>
+        <a href="#" class="nav-item"><i data-lucide="download"></i> অ্যাপ</a>
+        <a href="#" class="nav-item"><i data-lucide="menu"></i> মেনু</a>
+    </div>
 
-<script>
-    // মুভি ডাটাবেস (এখানে আপনি আপনার মুভিগুলো যোগ করবেন)
-    const movies = [
-        { 
-            title: "Royal (2025) [ORG Hindi]", 
-            img: "https://m.media-amazon.com/images/M/MV5BMzU5ZGYzNmQtMTMyZi00YmY3LThjYTQtOTY0YjM2ZmYwY2E1XkEyXkFqcGc@._V1_.jpg", 
-            quality: "WEB-DL", 
-            views: "6.61K", 
-            time: "2 hours ago", 
-            lang: "HINDI-KANNADA",
-            link: "#" 
-        },
-        { 
-            title: "Honey Bunch (2025) Hindi ORG", 
-            img: "https://m.media-amazon.com/images/M/MV5BMjY5NjU0NTY5N15BMl5BanBnXkFtZTgwNjAzMjA2MTE@._V1_.jpg", 
-            quality: "WEB-DL", 
-            views: "53.1K", 
-            time: "6 hours ago", 
-            lang: "HINDI-ENGLISH",
-            link: "#" 
-        },
-        { 
-            title: "FIFA World Cup 2026 Semi Finals", 
-            img: "https://static.independent.co.uk/2022/12/18/18/AFP_333F2UN.jpg", 
-            quality: "HDTV", 
-            views: "5.44K", 
-            time: "13 hours ago", 
-            lang: "ENGLISH",
-            link: "#" 
+    <script>
+        lucide.createIcons();
+
+        // ৩০টি চ্যানেলের ডাটা (সবগুলো লাইভ লিঙ্ক আপডেট করা হয়েছে)
+        const channels = [
+            { name: "Somoy TV", cat: "News", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/SomoyTV.png", url: "https://somoytv-live.shofat.com/somoy/index.m3u8" },
+            { name: "Jamuna TV", cat: "News", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/JamunaTV.png", url: "https://jamunatv-live.shofat.com/jamuna/index.m3u8" },
+            { name: "Ekattor TV", cat: "News", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/71TV.png", url: "https://ekattor-live.shofat.com/ekattor/index.m3u8" },
+            { name: "Independent", cat: "News", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/IndependentTV.png", url: "https://live.itvbd.com/hls/itv_720p.m3u8" },
+            { name: "GTV", cat: "Entertainment", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/GTV.png", url: "https://gtv-live.shofat.com/gtv/index.m3u8" },
+            { name: "Channel 24", cat: "News", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/Channel24.png", url: "https://c24-live.shofat.com/c24/index.m3u8" },
+            { name: "Maasranga", cat: "Entertainment", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/MaasrangaTV.png", url: "https://maasranga-live.shofat.com/maasranga/index.m3u8" },
+            { name: "R TV", cat: "Entertainment", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/RTV.png", url: "https://rtv-live.shofat.com/rtv/index.m3u8" },
+            { name: "Ekushey TV", cat: "Entertainment", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/ETV.png", url: "https://etv-live.shofat.com/etv/index.m3u8" },
+            { name: "Channel I", cat: "Entertainment", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/ChannelI.png", url: "https://channeli-live.shofat.com/channeli/index.m3u8" },
+            { name: "Banglavision", cat: "Entertainment", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/Banglavision.png", url: "https://bv-live.shofat.com/bv/index.m3u8" },
+            { name: "NTV", cat: "Entertainment", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/NTV.png", url: "https://ntv-live.shofat.com/ntv/index.m3u8" },
+            { name: "Sangeet Bangla", cat: "Music", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/SangeetBangla.png", url: "https://sb.shofat.com/sb/index.m3u8" },
+            { name: "9XM", cat: "Music", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/9XM.png", url: "https://9xm.shofat.com/9xm/index.m3u8" },
+            { name: "Music Bangla", cat: "Music", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/MusicBangla.png", url: "https://musicbangla-live.shofat.com/musicbangla/index.m3u8" },
+            { name: "Peace TV", cat: "Entertainment", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/PeaceTV.png", url: "https://peacetv-live.shofat.com/peacetv/index.m3u8" },
+            { name: "Geo Ent", cat: "Entertainment", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/GeoTV.png", url: "https://geotv-live.shofat.com/geotv/index.m3u8" },
+            { name: "Zee TV", cat: "Entertainment", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/ZeeTV.png", url: "https://zeetv-live.shofat.com/zeetv/index.m3u8" },
+            { name: "Gopal Bhar", cat: "Kids", logo: "https://i.ibb.co/hL4L8Vp/gopalbhar.png", url: "https://raw.githubusercontent.com/popy-iptv/Bangladesh/main/Kids/GopalBhar.m3u8" },
+            { name: "B4U Movies", cat: "Entertainment", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/B4UMovies.png", url: "https://b4umovies-live.shofat.com/b4umovies/index.m3u8" },
+            { name: "Sony Aath", cat: "Entertainment", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/SonyAath.png", url: "https://sonyaath-live.shofat.com/sonyaath/index.m3u8" },
+            { name: "Star Jalsha", cat: "Entertainment", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/StarJalsha.png", url: "https://starjalsha-live.shofat.com/starjalsha/index.m3u8" },
+            { name: "Zee Bangla", cat: "Entertainment", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/ZeeBangla.png", url: "https://zeebangla-live.shofat.com/zeebangla/index.m3u8" },
+            { name: "Ayna TV", cat: "Entertainment", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/AynaTV.png", url: "" },
+            { name: "Ananda TV", cat: "Entertainment", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/AnandaTV.png", url: "https://anandatv-live.shofat.com/anandatv/index.m3u8" },
+            { name: "SA TV", cat: "Entertainment", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/SATV.png", url: "https://satv-live.shofat.com/satv/index.m3u8" },
+            { name: "DBC News", cat: "News", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/DBCNews.png", url: "https://dbcnews-live.shofat.com/dbcnews/index.m3u8" },
+            { name: "Akhon TV", cat: "News", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/AkhonTV.png", url: "https://akhontv-live.shofat.com/akhontv/index.m3u8" },
+            { name: "T Sports", cat: "Sports", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/TSports.png", url: "https://tsports-live.shofat.com/tsports/index.m3u8" },
+            { name: "Sony Ten 1", cat: "Sports", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/SonyTen1.png", url: "https://sonyten1-live.shofat.com/sonyten1/index.m3u8" }
+        ];
+
+        const grid = document.getElementById('channelGrid');
+        const video = document.getElementById('video');
+
+        function displayChannels(filter) {
+            grid.innerHTML = '';
+            document.getElementById('secTitle').innerText = filter + " Channels";
+            
+            channels.forEach(ch => {
+                if (filter === 'All' || ch.cat === filter) {
+                    const card = document.createElement('div');
+                    card.className = 'channel-card';
+                    card.onclick = () => playChannel(ch.url, ch.name);
+                    card.innerHTML = `
+                        <span class="live-tag">LIVE</span>
+                        <div class="ch-thumb"><img src="${ch.logo}" onerror="this.src='https://via.placeholder.com/50?text=TV'"></div>
+                        <div class="ch-name">${ch.name}</div>
+                    `;
+                    grid.appendChild(card);
+                }
+            });
         }
-    ];
 
-    function displayMovies(data) {
-        const list = document.getElementById('movieList');
-        list.innerHTML = "";
-        data.forEach(movie => {
-            list.innerHTML += `
-                <a href="${movie.link}" style="text-decoration:none;">
-                <div class="movie-card">
-                    <div class="badge-top">PINNED</div>
-                    <div class="quality-tag">${movie.quality}</div>
-                    <img src="${movie.img}" alt="Poster">
-                    <div class="view-count"><i class="fa-regular fa-eye"></i> ${movie.views}</div>
-                    <div class="movie-info">
-                        <div class="movie-lang">${movie.lang}</div>
-                        <div class="movie-title">${movie.title}</div>
-                        <div class="movie-time">${movie.time}</div>
-                    </div>
-                </div>
-                </a>
-            `;
-        });
-    }
+        function filterChannels(cat, btn) {
+            displayChannels(cat);
+            const buttons = document.querySelectorAll('.cat-tab');
+            buttons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
 
-    function searchMovie() {
-        const val = document.getElementById('searchBox').value.toLowerCase();
-        const filtered = movies.filter(m => m.title.toLowerCase().includes(val));
-        displayMovies(filtered);
-    }
+        function playChannel(url, name) {
+            if (!url) { alert(name + " শীঘ্রই আসবে!"); return; }
+            if (Hls.isSupported()) {
+                const hls = new Hls(); hls.loadSource(url); hls.attachMedia(video);
+                hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
+            } else { video.src = url; video.play(); }
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
 
-    displayMovies(movies);
-</script>
-
+        displayChannels('All');
+    </script>
 </body>
 </html>

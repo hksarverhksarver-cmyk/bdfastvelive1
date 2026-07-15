@@ -3,107 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BD FAST TV - Pro</title>
+    <title>BD FAST TV - Premium Portal</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        :root { --primary: #1a7a2e; --bg: #0b0b0b; --card: #ffffff; }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: sans-serif; background: var(--bg); color: #fff; max-width: 500px; margin: 0 auto; padding-bottom: 80px; }
-        
-        .header { background: var(--primary); padding: 15px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 1000; }
-        .logo-area { display: flex; align-items: center; gap: 8px; }
-        .logo-area img { width: 30px; height: 30px; border-radius: 50%; background: #fff; }
-        
-        .player-box { width: 100%; background: #000; aspect-ratio: 16/9; position: sticky; top: 60px; z-index: 999; border-bottom: 2px solid var(--primary); }
-        video { width: 100%; height: 100%; }
+        :root { --main-green: #1a7a2e; --bg-dark: #000000; --card-bg: #ffffff; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        body { background: var(--bg-dark); color: #fff; max-width: 500px; margin: 0 auto; padding-bottom: 80px; }
 
-        .error-msg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 12px; color: #ff4444; text-align: center; display: none; width: 80%; }
+        /* Header */
+        .header { background: var(--main-green); padding: 12px 15px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 1000; }
+        .header-left { display: flex; align-items: center; gap: 8px; }
+        .header-left img { width: 32px; height: 32px; border-radius: 50%; border: 2px solid #fff; }
+        .header-left span { font-weight: bold; font-size: 18px; }
 
+        /* Video Player */
+        .player-container { width: 100%; background: #000; aspect-ratio: 16/9; position: sticky; top: 56px; z-index: 999; border-bottom: 2px solid var(--main-green); }
+        video { width: 100%; height: 100%; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+
+        /* Channel Grid */
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 15px; }
-        .card { background: var(--card); border-radius: 10px; padding: 10px; text-align: center; cursor: pointer; transition: 0.2s; position: relative; }
-        .card:active { transform: scale(0.95); }
-        .card img { width: 100%; aspect-ratio: 1/1; object-fit: contain; margin-bottom: 5px; }
-        .card span { color: #333; font-size: 10px; font-weight: bold; display: block; text-transform: uppercase; }
+        .card { background: #1a1a1a; border-radius: 10px; overflow: hidden; text-align: center; cursor: pointer; border: 1px solid #333; transition: 0.2s; position: relative; padding-bottom: 5px;}
+        .card:active { transform: scale(0.95); background: var(--main-green); }
+        .card.active { border: 2px solid var(--main-green); }
         
-        .live-dot { position: absolute; top: 5px; right: 5px; width: 8px; height: 8px; background: red; border-radius: 50%; animation: blink 1s infinite; }
-        @keyframes blink { 0% {opacity: 1;} 50% {opacity: 0.3;} 100% {opacity: 1;} }
+        .img-box { background: #fff; width: 100%; aspect-ratio: 1.2/1; display: flex; align-items: center; justify-content: center; padding: 10px; }
+        .img-box img { width: 100%; height: 100%; object-fit: contain; }
+        
+        .card span { display: block; font-size: 11px; padding: 8px 2px; color: #fff; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 500px; background: #1a1a1a; display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #333; }
-        .nav-link { color: #888; font-size: 20px; display: flex; flex-direction: column; align-items: center; font-size: 10px; text-decoration: none; }
-        .nav-link.active { color: var(--primary); }
+        /* Bottom Nav */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 500px; background: #0e0e0e; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #222; z-index: 1000; }
+        .nav-item { color: #888; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; font-weight: bold; }
+        .nav-item.active { color: var(--main-green); }
+        .nav-item i { font-size: 20px; }
+
+        /* Live Indicator */
+        .live-tag { position: absolute; top: 5px; left: 5px; background: rgba(0,0,0,0.6); padding: 2px 5px; border-radius: 3px; display: flex; align-items: center; gap: 3px; z-index: 10; }
+        .dot { width: 6px; height: 6px; background: red; border-radius: 50%; animation: blink 1s infinite; }
+        @keyframes blink { 0% {opacity: 1} 50% {opacity: 0.3} 100% {opacity: 1} }
+
     </style>
 </head>
 <body>
 
 <div class="header">
-    <div class="logo-area">
+    <div class="header-left">
         <img src="https://i.postimg.cc/mD8zYJ5r/logo.png" alt="Logo">
-        <span style="font-weight:bold;">BD FAST TV</span>
+        <span>BD FAST TV</span>
     </div>
-    <i class="fa-solid fa-sync" onclick="location.reload()" style="cursor:pointer;"></i>
+    <i class="fa-solid fa-magnifying-glass" style="font-size: 18px;"></i>
 </div>
 
-<div class="player-box">
-    <div id="error" class="error-msg">চ্যানেল লোড হতে সমস্যা হচ্ছে... অন্য একটি চেষ্টা করুন।</div>
-    <video id="video" controls autoplay playsinline></video>
+<div class="player-container">
+    <video id="video" controls autoplay playsinline poster="https://i.postimg.cc/mD8zYJ5r/logo.png"></video>
 </div>
 
-<div class="grid" id="grid"></div>
+<div class="grid" id="mainGrid"></div>
 
 <div class="bottom-nav">
-    <a href="#" class="nav-link active"><i class="fa-solid fa-house"></i>Home</a>
-    <a href="#" class="nav-link"><i class="fa-solid fa-play"></i>Live</a>
-    <a href="#" class="nav-link"><i class="fa-solid fa-layer-group"></i>Portal</a>
-    <a href="#" class="nav-link"><i class="fa-solid fa-bars"></i>Menu</a>
+    <a href="#" class="nav-item active"><i class="fa-solid fa-house"></i>Home</a>
+    <a href="#" class="nav-item"><i class="fa-solid fa-mobile-screen-button"></i>App</a>
+    <a href="#" class="nav-item"><i class="fa-solid fa-earth-americas"></i>Portal</a>
+    <a href="#" class="nav-item"><i class="fa-solid fa-magnifying-glass"></i>Search</a>
+    <a href="#" class="nav-item"><i class="fa-solid fa-bars"></i>Menu</a>
 </div>
 
 <script>
     const video = document.getElementById('video');
-    const errorMsg = document.getElementById('error');
-    
-    // নতুন সচল লিংক (এগুলো বর্তমানে কাজ করার কথা)
     const channels = [
-        { name: "Test Stream", logo: "https://via.placeholder.com/100?text=Test", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" },
         { name: "Somoy TV", logo: "https://raw.githubusercontent.com/sk-Sabbir/BD_IPTV/main/Logos/SomoyTV.png", url: "https://somoytv-live.shofat.com/somoy/index.m3u8" },
+        { name: "Jamuna TV", logo: "https://raw.githubusercontent.com/sk-Sabbir/BD_IPTV/main/Logos/JamunaTV.png", url: "https://live-jamuna.shofat.com/jamuna/index.m3u8" },
         { name: "Independent", logo: "https://raw.githubusercontent.com/sk-Sabbir/BD_IPTV/main/Logos/IndependentTV.png", url: "https://live.itvbd.com/hls/itv_720p.m3u8" },
         { name: "T Sports", logo: "https://raw.githubusercontent.com/sk-Sabbir/BD_IPTV/main/Logos/TSports.png", url: "https://tsports-live.shofat.com/tsports/index.m3u8" },
-        { name: "Sony Ten 1", logo: "https://via.placeholder.com/100?text=Sony", url: "https://fcc38ae9900c.us-east-1.playback.live-video.net/api/video/v1/us-east-1.990554490119.channel.m9pA9p6E4p9p.m3u8" }
+        { name: "News24", logo: "https://raw.githubusercontent.com/sk-Sabbir/BD_IPTV/main/Logos/News24.png", url: "https://news24-live.shofat.com/news24/index.m3u8" },
+        { name: "Gaan Bangla", logo: "https://raw.githubusercontent.com/sk-Sabbir/BD_IPTV/main/Logos/GaanBangla.png", url: "https://gb.shofat.com/gb/index.m3u8" },
+        { name: "DBC News", logo: "https://raw.githubusercontent.com/sk-Sabbir/BD_IPTV/main/Logos/DBCNews.png", url: "https://dbcnews-live.shofat.com/dbcnews/index.m3u8" },
+        { name: "Sangeet Bangla", logo: "https://raw.githubusercontent.com/sk-Sabbir/BD_IPTV/main/Logos/SangeetBangla.png", url: "https://sb.shofat.com/sb/index.m3u8" },
+        { name: "Test Stream", logo: "https://via.placeholder.com/150/ffffff/000000?text=GLOBAL+TV", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" }
     ];
 
-    function loadGrid() {
-        const grid = document.getElementById('grid');
-        channels.forEach(ch => {
-            const div = document.createElement('div');
-            div.className = 'card';
-            div.onclick = () => play(ch.url);
-            div.innerHTML = `<div class="live-dot"></div><img src="${ch.logo}"><span>${ch.name}</span>`;
-            grid.appendChild(div);
+    function init() {
+        const grid = document.getElementById('mainGrid');
+        channels.forEach((ch, index) => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <div class="live-tag"><div class="dot"></div></div>
+                <div class="img-box"><img src="${ch.logo}" onerror="this.src='https://via.placeholder.com/100?text=LOGO'"></div>
+                <span>${ch.name}</span>
+            `;
+            card.onclick = () => {
+                play(ch.url);
+                document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
+            };
+            grid.appendChild(card);
         });
+        play(channels[0].url); // অটো প্রথম চ্যানেল
     }
 
     function play(url) {
-        errorMsg.style.display = 'none';
         if (Hls.isSupported()) {
-            const hls = new Hls({
-                xhrSetup: function(xhr, url) {
-                    xhr.withCredentials = false; // CORS সমস্যা এড়াতে
-                }
-            });
+            const hls = new Hls();
             hls.loadSource(url);
             hls.attachMedia(video);
-            hls.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(() => {}));
-            hls.on(Hls.Events.ERROR, (event, data) => {
-                if (data.fatal) errorMsg.style.display = 'block';
-            });
+            hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
         } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
             video.src = url;
             video.play();
         }
+        window.scrollTo({top: 0, behavior: 'smooth'});
     }
 
-    loadGrid();
-    play(channels[0].url); // প্রথম চ্যানেল হিসেবে টেস্ট স্ট্রিম চলবে
+    init();
 </script>
 </body>
 </html>

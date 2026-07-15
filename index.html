@@ -3,45 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BD FAST TV - Premium</title>
+    <title>BD FAST TV - Pro</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        :root { --primary-color: #1a7a2e; --bg-color: #0f1014; --card-bg: #ffffff; }
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Segoe UI', Roboto, sans-serif; background: var(--bg-color); color: #fff; max-width: 500px; margin: 0 auto; padding-bottom: 80px; }
+        :root { --primary: #1a7a2e; --bg: #0b0b0b; --card: #ffffff; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: sans-serif; background: var(--bg); color: #fff; max-width: 500px; margin: 0 auto; padding-bottom: 80px; }
         
-        /* Header */
-        .header { background: #1a7a2e; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 1000; }
-        .logo-area { display: flex; align-items: center; gap: 10px; }
-        .logo-area img { width: 35px; height: 35px; border-radius: 50%; border: 2px solid #fff; }
-        .app-name { font-weight: 700; font-size: 18px; letter-spacing: 0.5px; }
-
-        /* Player */
-        .player-container { width: 100%; background: #000; aspect-ratio: 16/9; position: sticky; top: 58px; z-index: 999; border-bottom: 3px solid var(--primary-color); }
-        video { width: 100%; height: 100%; background: #000; }
-
-        /* Grid Layout */
-        .channel-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 15px; }
-        .channel-card { background: var(--card-bg); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; align-items: center; padding: 8px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
-        .channel-card:active { transform: scale(0.92); }
-        .ch-logo-box { width: 100%; aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; background: #fff; border-radius: 8px; margin-bottom: 5px; position: relative; }
-        .ch-logo-box img { width: 85%; height: 85%; object-fit: contain; }
-        .ch-name { color: #333; font-size: 10px; font-weight: 800; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; text-transform: uppercase; }
+        .header { background: var(--primary); padding: 15px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 1000; }
+        .logo-area { display: flex; align-items: center; gap: 8px; }
+        .logo-area img { width: 30px; height: 30px; border-radius: 50%; background: #fff; }
         
-        /* Live Tag */
-        .live-indicator { position: absolute; top: 4px; right: 4px; background: red; color: white; font-size: 7px; padding: 1px 4px; border-radius: 3px; font-weight: bold; }
+        .player-box { width: 100%; background: #000; aspect-ratio: 16/9; position: sticky; top: 60px; z-index: 999; border-bottom: 2px solid var(--primary); }
+        video { width: 100%; height: 100%; }
 
-        /* Bottom Nav */
-        .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 500px; background: #16171b; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #333; z-index: 1000; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #888; font-size: 10px; text-decoration: none; gap: 4px; }
-        .nav-item.active { color: var(--primary-color); }
-        .nav-item i { font-size: 18px; }
+        .error-msg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 12px; color: #ff4444; text-align: center; display: none; width: 80%; }
 
-        /* Categories */
-        .cats { display: flex; gap: 10px; overflow-x: auto; padding: 10px 15px; scrollbar-width: none; }
-        .cat-btn { padding: 6px 15px; border-radius: 20px; border: none; background: #25262b; color: #ccc; font-size: 12px; font-weight: 600; white-space: nowrap; }
-        .cat-btn.active { background: var(--primary-color); color: #fff; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 15px; }
+        .card { background: var(--card); border-radius: 10px; padding: 10px; text-align: center; cursor: pointer; transition: 0.2s; position: relative; }
+        .card:active { transform: scale(0.95); }
+        .card img { width: 100%; aspect-ratio: 1/1; object-fit: contain; margin-bottom: 5px; }
+        .card span { color: #333; font-size: 10px; font-weight: bold; display: block; text-transform: uppercase; }
+        
+        .live-dot { position: absolute; top: 5px; right: 5px; width: 8px; height: 8px; background: red; border-radius: 50%; animation: blink 1s infinite; }
+        @keyframes blink { 0% {opacity: 1;} 50% {opacity: 0.3;} 100% {opacity: 1;} }
+
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 500px; background: #1a1a1a; display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #333; }
+        .nav-link { color: #888; font-size: 20px; display: flex; flex-direction: column; align-items: center; font-size: 10px; text-decoration: none; }
+        .nav-link.active { color: var(--primary); }
     </style>
 </head>
 <body>
@@ -49,89 +39,71 @@
 <div class="header">
     <div class="logo-area">
         <img src="https://i.postimg.cc/mD8zYJ5r/logo.png" alt="Logo">
-        <span class="app-name">BD FAST TV</span>
+        <span style="font-weight:bold;">BD FAST TV</span>
     </div>
-    <i class="fa-solid fa-magnifying-glass"></i>
+    <i class="fa-solid fa-sync" onclick="location.reload()" style="cursor:pointer;"></i>
 </div>
 
-<div class="player-container">
+<div class="player-box">
+    <div id="error" class="error-msg">চ্যানেল লোড হতে সমস্যা হচ্ছে... অন্য একটি চেষ্টা করুন।</div>
     <video id="video" controls autoplay playsinline></video>
 </div>
 
-<div class="cats">
-    <button class="cat-btn active" onclick="filterCat('All', this)">Home</button>
-    <button class="cat-btn" onclick="filterCat('News', this)">News</button>
-    <button class="cat-btn" onclick="filterCat('Sports', this)">Sports</button>
-    <button class="cat-btn" onclick="filterCat('Music', this)">Music</button>
-</div>
-
-<div class="channel-grid" id="mainGrid"></div>
+<div class="grid" id="grid"></div>
 
 <div class="bottom-nav">
-    <a href="#" class="nav-item active"><i class="fa-solid fa-house"></i>Home</a>
-    <a href="#" class="nav-item"><i class="fa-solid fa-mobile-screen"></i>App</a>
-    <a href="#" class="nav-item"><i class="fa-solid fa-earth-americas"></i>Portal</a>
-    <a href="#" class="nav-item"><i class="fa-solid fa-magnifying-glass"></i>Search</a>
-    <a href="#" class="nav-item"><i class="fa-solid fa-bars"></i>Menu</a>
+    <a href="#" class="nav-link active"><i class="fa-solid fa-house"></i>Home</a>
+    <a href="#" class="nav-link"><i class="fa-solid fa-play"></i>Live</a>
+    <a href="#" class="nav-link"><i class="fa-solid fa-layer-group"></i>Portal</a>
+    <a href="#" class="nav-link"><i class="fa-solid fa-bars"></i>Menu</a>
 </div>
 
 <script>
     const video = document.getElementById('video');
+    const errorMsg = document.getElementById('error');
     
-    // রানিং এবং সচল চ্যানেল ডাটা (লিংকগুলো আপডেট করা হয়েছে)
+    // নতুন সচল লিংক (এগুলো বর্তমানে কাজ করার কথা)
     const channels = [
-        { name: "Somoy TV", cat: "News", logo: "https://raw.githubusercontent.com/sk-Sabbir/BD_IPTV/main/Logos/SomoyTV.png", url: "https://somoytv-live.shofat.com/somoy/index.m3u8" },
-        { name: "Jamuna TV", cat: "News", logo: "https://raw.githubusercontent.com/sk-Sabbir/BD_IPTV/main/Logos/JamunaTV.png", url: "https://live-jamuna.shofat.com/jamuna/index.m3u8" },
-        { name: "Independent", cat: "News", logo: "https://raw.githubusercontent.com/sk-Sabbir/BD_IPTV/main/Logos/IndependentTV.png", url: "https://live.itvbd.com/hls/itv_720p.m3u8" },
-        { name: "T Sports", cat: "Sports", logo: "https://raw.githubusercontent.com/sk-Sabbir/BD_IPTV/main/Logos/TSports.png", url: "https://tsports-live.shofat.com/tsports/index.m3u8" },
-        { name: "Sony Ten 1", cat: "Sports", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f3/Sony_Ten_1_logo.svg/1200px-Sony_Ten_1_logo.svg.png", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" },
-        { name: "News24", cat: "News", logo: "https://raw.githubusercontent.com/sk-Sabbir/BD_IPTV/main/Logos/News24.png", url: "https://news24-live.shofat.com/news24/index.m3u8" },
-        { name: "Gaan Bangla", cat: "Music", logo: "https://raw.githubusercontent.com/sk-Sabbir/BD_IPTV/main/Logos/GaanBangla.png", url: "https://gb.shofat.com/gb/index.m3u8" },
-        { name: "DBC News", cat: "News", logo: "https://raw.githubusercontent.com/sk-Sabbir/BD_IPTV/main/Logos/DBCNews.png", url: "https://dbcnews-live.shofat.com/dbcnews/index.m3u8" },
-        { name: "Sangeet Bangla", cat: "Music", logo: "https://raw.githubusercontent.com/sk-Sabbir/BD_IPTV/main/Logos/SangeetBangla.png", url: "https://sb.shofat.com/sb/index.m3u8" }
+        { name: "Test Stream", logo: "https://via.placeholder.com/100?text=Test", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" },
+        { name: "Somoy TV", logo: "https://raw.githubusercontent.com/sk-Sabbir/BD_IPTV/main/Logos/SomoyTV.png", url: "https://somoytv-live.shofat.com/somoy/index.m3u8" },
+        { name: "Independent", logo: "https://raw.githubusercontent.com/sk-Sabbir/BD_IPTV/main/Logos/IndependentTV.png", url: "https://live.itvbd.com/hls/itv_720p.m3u8" },
+        { name: "T Sports", logo: "https://raw.githubusercontent.com/sk-Sabbir/BD_IPTV/main/Logos/TSports.png", url: "https://tsports-live.shofat.com/tsports/index.m3u8" },
+        { name: "Sony Ten 1", logo: "https://via.placeholder.com/100?text=Sony", url: "https://fcc38ae9900c.us-east-1.playback.live-video.net/api/video/v1/us-east-1.990554490119.channel.m9pA9p6E4p9p.m3u8" }
     ];
 
-    function renderChannels(filter = 'All') {
-        const grid = document.getElementById('mainGrid');
-        grid.innerHTML = '';
+    function loadGrid() {
+        const grid = document.getElementById('grid');
         channels.forEach(ch => {
-            if(filter === 'All' || ch.cat === filter) {
-                const card = document.createElement('div');
-                card.className = 'channel-card';
-                card.onclick = () => play(ch.url);
-                card.innerHTML = `
-                    <div class="ch-logo-box">
-                        <div class="live-indicator">LIVE</div>
-                        <img src="${ch.logo}" onerror="this.src='https://via.placeholder.com/100?text=TV'">
-                    </div>
-                    <div class="ch-name">${ch.name}</div>
-                `;
-                grid.appendChild(card);
-            }
+            const div = document.createElement('div');
+            div.className = 'card';
+            div.onclick = () => play(ch.url);
+            div.innerHTML = `<div class="live-dot"></div><img src="${ch.logo}"><span>${ch.name}</span>`;
+            grid.appendChild(div);
         });
     }
 
     function play(url) {
+        errorMsg.style.display = 'none';
         if (Hls.isSupported()) {
-            const hls = new Hls();
+            const hls = new Hls({
+                xhrSetup: function(xhr, url) {
+                    xhr.withCredentials = false; // CORS সমস্যা এড়াতে
+                }
+            });
             hls.loadSource(url);
             hls.attachMedia(video);
-            hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
+            hls.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(() => {}));
+            hls.on(Hls.Events.ERROR, (event, data) => {
+                if (data.fatal) errorMsg.style.display = 'block';
+            });
         } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
             video.src = url;
             video.play();
         }
-        window.scrollTo({top: 0, behavior: 'smooth'});
     }
 
-    function filterCat(cat, btn) {
-        renderChannels(cat);
-        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-    }
-
-    renderChannels();
-    play(channels[0].url); // অটো প্রথম চ্যানেল চলবে
+    loadGrid();
+    play(channels[0].url); // প্রথম চ্যানেল হিসেবে টেস্ট স্ট্রিম চলবে
 </script>
 </body>
 </html>

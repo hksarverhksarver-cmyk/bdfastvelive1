@@ -3,30 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BD FAST TV V8.0</title>
+    <title>BD FAST TV V9.0</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: sans-serif; background: #050505; color: #fff; max-width: 480px; margin: 0 auto; padding-bottom: 50px; }
-        .header { background: #1a7a2e; padding: 15px; text-align: center; font-size: 20px; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        body { font-family: sans-serif; background: #080808; color: #fff; max-width: 480px; margin: 0 auto; padding-bottom: 50px; }
+        .header { background: #1a7a2e; padding: 15px; text-align: center; font-size: 20px; font-weight: 800; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
         .player-box { width: 100%; aspect-ratio: 16/9; background: #000; border-bottom: 3px solid #1a7a2e; }
         video { width: 100%; height: 100%; }
         #status { color: #00ff00; font-size: 14px; margin: 10px 0; font-weight: bold; text-align: center; min-height: 20px; }
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 15px; }
-        .card { background: #111; border-radius: 12px; padding: 12px 5px; text-align: center; cursor: pointer; border: 1px solid #222; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 15px; }
+        .card { background: #121212; border-radius: 12px; padding: 15px 5px; text-align: center; cursor: pointer; border: 1px solid #222; }
         .card:active { background: #1a7a2e; transform: scale(0.95); }
-        .thumb { width: 50px; height: 50px; margin: 0 auto 8px; background: #fff; border-radius: 50%; padding: 5px; display: flex; align-items: center; justify-content: center; }
+        .thumb { width: 55px; height: 55px; margin: 0 auto 8px; background: #fff; border-radius: 50%; padding: 5px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .thumb img { max-width: 100%; max-height: 100%; object-fit: contain; }
-        .name { font-size: 10px; font-weight: bold; color: #eee; text-transform: uppercase; }
+        .name { font-size: 11px; font-weight: bold; color: #eee; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
-    <div class="header">BD FAST TV <span style="font-size: 10px;">V8.0</span></div>
+    <div class="header">BD FAST TV <span style="font-size: 10px;">V9.0</span></div>
 
     <div class="player-box">
-        <!-- পোস্টার ইমেজ ঠিক করা হয়েছে -->
-        <video id="video" controls autoplay playsinline poster="https://i.ibb.co/L5fX0Gg/BD-FAST-TV-Logo.png"></video>
+        <!-- ইমেজ সমস্যা এড়াতে পোস্টার হিসেবে একটি সলিড ইমেজ দেওয়া হয়েছে -->
+        <video id="video" controls autoplay playsinline poster="https://cdn-icons-png.flaticon.com/512/5833/5833290.png"></video>
     </div>
 
     <div id="status">চ্যানেল সিলেক্ট করুন</div>
@@ -37,18 +37,15 @@
         const proxy = "https://bdfast-proxy.sksunnysong143.workers.dev/?url=";
 
         const channels = [
-            // আপনার দেওয়া নতুন ৫টি চ্যানেল
             { name: "NTV", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/NTV.png", url: "https://list.iptvcat.com/my_list/s/9d1072d7e3966132410c2e3cd9294dc8.m3u8" },
             { name: "BTV", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/BTV.png", url: "https://list.iptvcat.com/my_list/s/3c539dc849b96e2607bda4b2538366a6.m3u8" },
             { name: "DBC News", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/DBCNews.png", url: "https://list.iptvcat.com/my_list/s/c5db599604e1db7c8517ee6a4552e000.m3u8" },
             { name: "My TV", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/MyTV.png", url: "https://list.iptvcat.com/my_list/s/2377755513294b82760a04aa09ec9404.m3u8" },
             { name: "RTV", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/RTV.png", url: "https://list.iptvcat.com/my_list/s/b4b2c40488e3f04b43474e4451220a6d.m3u8" },
-            
-            // অন্যান্য চ্যানেল
             { name: "Somoy TV", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/SomoyTV.png", url: "https://somoytv-live.shofat.com/somoy/index.m3u8" },
             { name: "Jamuna TV", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/JamunaTV.png", url: "https://jamunatv-live.shofat.com/jamuna/index.m3u8" },
             { name: "Independent", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/IndependentTV.png", url: "https://live.itvbd.com/hls/itv_720p.m3u8" },
-            { name: "Test Stream", logo: "https://via.placeholder.com/50?text=LIVE", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" }
+            { name: "Test Stream", logo: "https://cdn-icons-png.flaticon.com/512/716/716429.png", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" }
         ];
 
         const grid = document.getElementById('grid');

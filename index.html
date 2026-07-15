@@ -2,88 +2,143 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BD FAST TV - YouTube Edition</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOVIE LINK BD - Clone</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        :root { --green: #1a7a2e; --bg: #0f1014; }
+        :root { --red: #ff3131; --bg: #121212; --card-bg: #1e1e1e; --green: #2ecc71; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background: var(--bg); color: #fff; max-width: 500px; margin: 0 auto; padding-bottom: 80px; }
+        body { background: var(--bg); color: #fff; max-width: 600px; margin: 0 auto; padding-bottom: 50px; }
 
-        .header { background: var(--green); padding: 15px; text-align: center; position: sticky; top: 0; z-index: 1000; font-weight: bold; font-size: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+        /* Header Section */
+        .header { text-align: center; padding: 20px; }
+        .site-title { font-size: 35px; font-weight: 900; color: var(--red); text-transform: uppercase; letter-spacing: -1px; }
+        .notice { font-size: 11px; background: rgba(255,255,255,0.1); padding: 10px; border-radius: 5px; margin-top: 10px; border-left: 3px solid var(--red); }
 
-        /* YouTube Player Area */
-        .player-container { width: 100%; background: #000; aspect-ratio: 16/9; position: sticky; top: 58px; z-index: 999; border-bottom: 4px solid var(--green); }
-        iframe { width: 100%; height: 100%; border: none; }
+        /* Domain Buttons */
+        .domain-links { display: flex; justify-content: center; gap: 5px; margin: 15px 0; flex-wrap: wrap; }
+        .domain-btn { padding: 5px 12px; border-radius: 5px; font-size: 10px; font-weight: bold; text-decoration: none; color: #fff; background: #444; }
+        .domain-btn.new { background: #777; }
+        .domain-btn.active { background: #00bcd4; }
 
-        /* Grid Layout */
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 15px; }
-        .card { background: #fff; border-radius: 12px; padding: 15px 5px; cursor: pointer; text-align: center; display: flex; flex-direction: column; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.4); border: 2px solid transparent; transition: 0.2s; }
-        .card:active { transform: scale(0.92); }
-        .card.active { border-color: var(--green); background: #e8f5e9; }
+        /* Category Buttons */
+        .categories { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 10px; }
+        .cat-btn { padding: 8px; border-radius: 5px; border: none; font-size: 11px; font-weight: bold; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; text-decoration: none; }
         
-        .card i { font-size: 30px; color: var(--green); margin-bottom: 8px; }
-        .card span { color: #333; font-size: 10px; font-weight: 900; text-transform: uppercase; }
+        /* Search Bar */
+        .search-container { padding: 10px 15px; display: flex; gap: 5px; }
+        #searchBox { flex: 1; padding: 12px; border-radius: 5px 0 0 5px; border: none; background: #252525; color: #fff; outline: none; }
+        .search-btn { background: #00bcd4; border: none; padding: 0 15px; border-radius: 0 5px 5px 0; color: #fff; cursor: pointer; }
 
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 500px; background: #111; display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #333; }
-        .nav-link { color: #777; text-decoration: none; display: flex; flex-direction: column; align-items: center; font-size: 10px; font-weight: bold; }
-        .nav-link.active { color: var(--green); }
-        .nav-link i { font-size: 22px; }
+        /* Movie Grid */
+        .movie-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 15px; }
+        .movie-card { background: var(--card-bg); border-radius: 8px; overflow: hidden; position: relative; border: 1px solid #333; }
+        .movie-card img { width: 100%; aspect-ratio: 2/3; object-fit: cover; }
+        
+        .badge-top { position: absolute; top: 5px; left: 5px; background: #ffc107; color: #000; font-size: 9px; font-weight: bold; padding: 2px 6px; border-radius: 3px; }
+        .quality-tag { position: absolute; top: 5px; right: 5px; background: #007bff; color: #fff; font-size: 9px; padding: 2px 6px; border-radius: 3px; }
+        .view-count { position: absolute; bottom: 80px; right: 10px; background: rgba(0,0,0,0.7); font-size: 10px; padding: 2px 6px; border-radius: 10px; display: flex; align-items: center; gap: 4px; }
+        
+        .movie-info { padding: 10px; text-align: center; }
+        .movie-lang { font-size: 9px; background: var(--green); color: #000; padding: 2px 6px; border-radius: 3px; font-weight: bold; display: inline-block; margin-bottom: 5px; }
+        .movie-title { font-size: 12px; font-weight: bold; color: #eee; height: 35px; overflow: hidden; }
+        .movie-time { font-size: 10px; color: #888; margin-top: 5px; }
     </style>
 </head>
 <body>
 
-<div class="header">BD FAST TV</div>
-
-<div class="player-container" id="playerArea">
-    <!-- শুরুতে একটি চ্যানেল লোড হয়ে থাকবে -->
-    <iframe id="ytPlayer" src="https://www.youtube.com/embed/live_stream?channel=UC9-TdfitAn5zFzHIn_04_Sg&autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+<div class="header">
+    <div class="site-title">MOVIELINKBD</div>
+    <div class="notice">
+        Official & Always Active Link: MovieLinkBD.com ✅<br>
+        <small>যদি সাইট লোড না হয়, 1.1.1.1 VPN ব্যবহার করুন।</small>
+    </div>
 </div>
 
-<div class="grid" id="mainGrid"></div>
+<div class="domain-links">
+    <a href="#" class="domain-btn new">NEW</a>
+    <a href="#" class="domain-btn active">.ONE</a>
+    <a href="#" class="domain-btn">.WORK</a>
+    <a href="#" class="domain-btn" style="background:#ffc107; color:#000;">.SHOP</a>
+</div>
 
-<div class="bottom-nav">
-    <a href="#" class="nav-link active"><i class="fa-solid fa-house"></i>Home</a>
-    <a href="#" class="nav-link"><i class="fa-brands fa-youtube"></i>YouTube</a>
-    <a href="#" class="nav-link"><i class="fa-solid fa-globe"></i>Portal</a>
-    <a href="#" class="nav-link" onclick="location.reload()"><i class="fa-solid fa-rotate"></i>Reload</a>
+<div class="categories">
+    <a href="#" class="cat-btn" style="background:#d32f2f;"><i class="fa-solid fa-house"></i> HOME</a>
+    <a href="#" class="cat-btn" style="background:#2e7d32;"><img src="https://flagcdn.com/w20/bd.png" width="15"> BANGLA</a>
+    <a href="#" class="cat-btn" style="background:#1976d2;"><i class="fa-solid fa-microphone"></i> DUBBED</a>
+</div>
+
+<div class="search-container">
+    <input type="text" id="searchBox" placeholder="সার্চ করে খুঁজে নিন পছন্দের মুভি..." onkeyup="searchMovie()">
+    <button class="search-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
+</div>
+
+<div class="movie-grid" id="movieList">
+    <!-- মুভিগুলো এখানে অটোমেটিক লোড হবে -->
 </div>
 
 <script>
-    // ইউটিউব চ্যানেলের আইডি লিস্ট (এগুলো পার্মানেন্ট লাইভ আইডি)
-    const channels = [
-        { name: "Somoy TV", icon: "fa-solid fa-tv", ytId: "UC9-TdfitAn5zFzHIn_04_Sg" },
-        { name: "Jamuna TV", icon: "fa-solid fa-tv", ytId: "UCYp_v98YpLp_uP0i726f1pA" },
-        { name: "Independent", icon: "fa-solid fa-newspaper", ytId: "UCfH6v6NID_Z_v8_S-v8fX8Q" },
-        { name: "News24", icon: "fa-solid fa-broadcast-tower", ytId: "UCuT0_UshG_X-V6l-P8_N_pA" },
-        { name: "DBC News", icon: "fa-solid fa-layer-group", ytId: "UCuD97L6X6K9U1mE6i-7-9rA" },
-        { name: "Ekattor TV", icon: "fa-solid fa-clapperboard", ytId: "UCuD97L6X6K9U1mE6i-7-9rA" }, // Ekattor ID
-        { name: "Channel i", icon: "fa-solid fa-tv", ytId: "UC7p3_eN2_L_S8vFpZ_p_r6Q" }
+    // মুভি ডাটাবেস (এখানে আপনি আপনার মুভিগুলো যোগ করবেন)
+    const movies = [
+        { 
+            title: "Royal (2025) [ORG Hindi]", 
+            img: "https://m.media-amazon.com/images/M/MV5BMzU5ZGYzNmQtMTMyZi00YmY3LThjYTQtOTY0YjM2ZmYwY2E1XkEyXkFqcGc@._V1_.jpg", 
+            quality: "WEB-DL", 
+            views: "6.61K", 
+            time: "2 hours ago", 
+            lang: "HINDI-KANNADA",
+            link: "#" 
+        },
+        { 
+            title: "Honey Bunch (2025) Hindi ORG", 
+            img: "https://m.media-amazon.com/images/M/MV5BMjY5NjU0NTY5N15BMl5BanBnXkFtZTgwNjAzMjA2MTE@._V1_.jpg", 
+            quality: "WEB-DL", 
+            views: "53.1K", 
+            time: "6 hours ago", 
+            lang: "HINDI-ENGLISH",
+            link: "#" 
+        },
+        { 
+            title: "FIFA World Cup 2026 Semi Finals", 
+            img: "https://static.independent.co.uk/2022/12/18/18/AFP_333F2UN.jpg", 
+            quality: "HDTV", 
+            views: "5.44K", 
+            time: "13 hours ago", 
+            lang: "ENGLISH",
+            link: "#" 
+        }
     ];
 
-    function render() {
-        const grid = document.getElementById('mainGrid');
-        const ytPlayer = document.getElementById('ytPlayer');
-
-        channels.forEach((ch, index) => {
-            const card = document.createElement('div');
-            card.className = 'card';
-            if(index === 0) card.classList.add('active'); // প্রথমটা একটিভ দেখাবে
-            card.innerHTML = `<i class="${ch.icon}"></i><span>${ch.name}</span>`;
-            
-            card.onclick = () => {
-                // ইউটিউব লাইভ চেঞ্জ করার নতুন পদ্ধতি
-                ytPlayer.src = `https://www.youtube.com/embed/live_stream?channel=${ch.ytId}&autoplay=1`;
-                
-                document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
-                card.classList.add('active');
-                window.scrollTo({top: 0, behavior: 'smooth'});
-            };
-            grid.appendChild(card);
+    function displayMovies(data) {
+        const list = document.getElementById('movieList');
+        list.innerHTML = "";
+        data.forEach(movie => {
+            list.innerHTML += `
+                <a href="${movie.link}" style="text-decoration:none;">
+                <div class="movie-card">
+                    <div class="badge-top">PINNED</div>
+                    <div class="quality-tag">${movie.quality}</div>
+                    <img src="${movie.img}" alt="Poster">
+                    <div class="view-count"><i class="fa-regular fa-eye"></i> ${movie.views}</div>
+                    <div class="movie-info">
+                        <div class="movie-lang">${movie.lang}</div>
+                        <div class="movie-title">${movie.title}</div>
+                        <div class="movie-time">${movie.time}</div>
+                    </div>
+                </div>
+                </a>
+            `;
         });
     }
 
-    render();
+    function searchMovie() {
+        const val = document.getElementById('searchBox').value.toLowerCase();
+        const filtered = movies.filter(m => m.title.toLowerCase().includes(val));
+        displayMovies(filtered);
+    }
+
+    displayMovies(movies);
 </script>
+
 </body>
 </html>

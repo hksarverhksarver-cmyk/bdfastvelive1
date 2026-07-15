@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>BD FAST TV</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         body { margin: 0; background: #0a0a0a; color: white; font-family: sans-serif; text-align: center; max-width: 480px; margin: 0 auto; }
         .header { background: #1a7a2e; padding: 15px; font-weight: bold; font-size: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; }
@@ -21,27 +20,24 @@
 <body>
 
 <div class="header">
-    <!-- লোগো লিঙ্ক ঠিক করা হয়েছে -->
-    <img src="https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/SomoyTV.png" class="site-logo">
+    <img src="https://i.ibb.co/L5fX0Gg/BD-FAST-TV-Logo.png" class="site-logo">
     BD FAST TV
 </div>
 
-<video id="video" controls autoplay playsinline poster="https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/SomoyTV.png"></video>
+<video id="video" controls autoplay playsinline poster="https://i.ibb.co/L5fX0Gg/BD-FAST-TV-Logo.png"></video>
 <div id="status"></div>
 
 <div class="grid" id="grid"></div>
 
 <script>
-    lucide.createIcons();
-    // আপনার সঠিক প্রক্সি লিঙ্ক
+    // ১. আপনার সঠিক প্রক্সি লিঙ্ক (এটি কাজ করছে কি না আগে ব্রাউজারে চেক করুন)
     const proxy = "https://bdfast-proxy.sksunnysong143.workers.dev/?url=";
 
     const channels = [
-        // টেস্ট স্ট্রিম (এটি চললে বুঝবেন প্রক্সি ঠিক আছে)
-        { name: "Test Stream", logo: "https://via.placeholder.com/50", url: proxy + "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" },
+        { name: "Test Stream", logo: "https://via.placeholder.com/150/000000/FFFFFF?text=LIVE", url: proxy + "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" },
+        { name: "Independent TV", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/IndependentTV.png", url: proxy + "https://live.itvbd.com/hls/itv_720p.m3u8" },
         { name: "Somoy TV", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/SomoyTV.png", url: proxy + "https://somoytv-live.shofat.com/somoy/index.m3u8" },
         { name: "Jamuna TV", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/JamunaTV.png", url: proxy + "https://jamunatv-live.shofat.com/jamuna/index.m3u8" },
-        { name: "Independent", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/IndependentTV.png", url: proxy + "https://live.itvbd.com/hls/itv_720p.m3u8" },
         { name: "T Sports", logo: "https://raw.githubusercontent.com/thebeastv/BDTV/main/Logos/TSports.png", url: proxy + "https://tsports-live.shofat.com/tsports/index.m3u8" }
     ];
 
@@ -65,7 +61,7 @@
             }
             window.scrollTo(0,0);
         };
-        div.innerHTML = `<img src="${ch.logo}"><div>${ch.name}</div>`;
+        div.innerHTML = `<img src="${ch.logo}" onerror="this.src='https://via.placeholder.com/50?text=TV'"><div>${ch.name}</div>`;
         grid.appendChild(div);
     });
 </script>

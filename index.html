@@ -8,59 +8,69 @@
     <link href="https://vjs.zencdn.net/7.20.3/video-js.css" rel="stylesheet" />
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background-color: #0c0c0c; color: white; padding-bottom: 20px; }
+        body { background-color: #0c0c0c; color: white; padding-bottom: 80px; }
 
         /* Header */
-        .header { background-color: #248b3b; padding: 12px; text-align: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+        .header { background-color: #248b3b; padding: 12px; text-align: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.5); }
         .header h1 { font-size: 18px; color: #fff; letter-spacing: 1px; }
 
-        /* Video Player Area */
-        .player-container { width: 100%; aspect-ratio: 16/9; background: #000; position: sticky; top: 47px; z-index: 999; border-bottom: 3px solid #248b3b; }
+        /* Player Section */
+        .player-container { width: 100%; aspect-ratio: 16/9; background: #000; position: sticky; top: 48px; z-index: 999; border-bottom: 2px solid #248b3b; }
         #main-player { width: 100%; height: 100%; }
 
-        .container { padding: 15px; }
-        .section-title { color: #248b3b; font-size: 17px; margin-bottom: 15px; font-weight: bold; border-left: 4px solid #248b3b; padding-left: 10px; }
-
-        /* Grid System (3 Columns for Mobile) */
+        /* Channel List Area */
+        .container { padding: 10px; }
         .channel-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
+            grid-template-columns: repeat(3, 1fr); /* ৩টি কলাম */
+            gap: 10px;
         }
 
+        /* Card Design */
         .channel-card {
             background: #1a1a1a;
             border-radius: 12px;
-            padding: 12px 5px;
+            padding: 10px 5px;
             text-align: center;
             cursor: pointer;
             border: 1px solid #333;
-            transition: 0.3s;
+            transition: 0.2s;
         }
         .channel-card:active { transform: scale(0.95); background: #248b3b22; }
-        .channel-card.active { border-color: #248b3b; background: #248b3b1a; box-shadow: 0 0 8px #248b3b44; }
+        .channel-card.active { border: 2px solid #248b3b; background: #248b3b1a; }
 
         .logo-box {
             width: 55px;
             height: 55px;
             background: #fff;
-            border-radius: 50%;
+            border-radius: 12px;
             margin: 0 auto 8px auto;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            padding: 6px;
+            padding: 5px;
         }
         .logo-box img { width: 100%; height: 100%; object-fit: contain; }
-        .channel-name { font-size: 11px; font-weight: bold; color: #efefef; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        .channel-name { font-size: 10px; font-weight: bold; color: #efefef; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* Tablet/Desktop adjustment */
-        @media (min-width: 768px) {
-            .channel-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
-            .logo-box { width: 70px; height: 70px; }
-            .channel-name { font-size: 13px; }
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: #111;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            border-top: 1px solid #248b3b;
+            z-index: 1001;
         }
+        .nav-item { text-align: center; color: #888; font-size: 10px; cursor: pointer; flex: 1; }
+        .nav-item.active { color: #248b3b; font-weight: bold; }
+
+        @media (min-width: 768px) { .channel-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); } }
     </style>
 </head>
 <body>
@@ -69,77 +79,104 @@
         <h1>BD FAST TV <span style="font-size: 10px; color: #eee;">V11.0</span></h1>
     </div>
 
-    <!-- Video Player Area -->
     <div class="player-container">
-        <video id="main-player" class="video-js vjs-default-skin vjs-16-9 vjs-big-play-centered" controls preload="auto">
-            <p class="vjs-no-js">To view this video please enable JavaScript.</p>
-        </video>
+        <video id="main-player" class="video-js vjs-default-skin vjs-16-9 vjs-big-play-centered" controls preload="auto"></video>
     </div>
 
     <div class="container">
-        <div class="section-title">পছন্দের চ্যানেলসমূহ</div>
+        <h4 style="margin: 10px 0; color: #248b3b;">লাইভ টিভি চ্যানেলসমূহ (৫২টি)</h4>
         <div class="channel-grid" id="channel-list">
-            <!-- Channels will appear here -->
+            <!-- ৫২টি চ্যানেল এখানে লোড হবে -->
         </div>
     </div>
 
-    <!-- Video.js and HLS support -->
+    <div class="bottom-nav">
+        <div class="nav-item active">🏠<br>Home</div>
+        <div class="nav-item">📱<br>App</div>
+        <div class="nav-item">🌐<br>Portal</div>
+        <div class="nav-item">🔍<br>Search</div>
+        <div class="nav-item">☰<br>Menu</div>
+    </div>
+
     <script src="https://vjs.zencdn.net/7.20.3/video.min.js"></script>
     <script>
-        // আপনার দেওয়া নতুন সচল লিঙ্কসমূহ
         const channels = [
-            { name: "9XM (1080)", logo: "https://upload.wikimedia.org/wikipedia/commons/e/ef/9XM_logo.png", url: "https://9xjio.wiseplayout.com/9XM/master.m3u8" },
-            { name: "B4 MUSIC", logo: "https://via.placeholder.com/60?text=B4", url: "https://cdn-2.pishow.tv/live/415/master.m3u8" },
-            { name: "ETV MUSIC", logo: "https://via.placeholder.com/60?text=ETV", url: "https://cc-szivnms4rlah6.akamaized.net/WWBI/Amagi/ETV_Music_IN/playlist.m3u8" },
-            { name: "MUSIC HINDI", logo: "https://via.placeholder.com/60?text=Hindi", url: "https://cdn-2.pishow.tv/live/226/master.m3u8" },
-            { name: "SANGEET BANGLA", logo: "https://via.placeholder.com/60?text=Sangeet", url: "https://cdn-4.pishow.tv/live/1143/master.m3u8" },
-            { name: "AAKASH AATH", logo: "https://via.placeholder.com/60?text=Aakash", url: "https://mumt03.tangotv.in/Dsly5z3HAAKASHAATH/index.m3u8" },
-            { name: "Shemaroo TV", logo: "https://via.placeholder.com/60?text=Shemaroo", url: "https://airtelapp.shemaroo.com/shemarootv/smil:shemarootvadp.smil/playlist.m3u8" },
-            { name: "ENTER 10 BANGLA", logo: "https://via.placeholder.com/60?text=E10", url: "https://live-bangla.akamaized.net/liveabr/playlist.m3u8" },
-            { name: "BIG MAGIC", logo: "https://via.placeholder.com/60?text=Magic", url: "https://mumt05.tangotv.in/87NeALx2BIGMAGIC/index.m3u8" },
-            { name: "ATN BANGLA", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/4/40/ATN_Bangla_logo.svg/1200px-ATN_Bangla_logo.svg.png", url: "https://app.ncare.live/c3VydmVyX8RpbEU9Mi8xNy8yMDE0GIDU6RgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcGVMZEJCTEFWeVN3PTOmdFsaWRtaW51aiPhnPTI2/atnbanglauk-off.stream/playlist.m3u8" },
-            { name: "SRK TV", logo: "https://via.placeholder.com/60?text=SRK", url: "https://srknowapp.ncare.live/srktvhlswodrm/srktv.stream/tracks-v1a1/mono.m3u8" },
-            { name: "DESH TV", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f0/Desh_TV_logo.svg/1200px-Desh_TV_logo.svg.png", url: "https://bozztv.com/rongo/rongo-DeshTV/index.m3u8" },
-            { name: "PEACE TV BANGLA", logo: "https://via.placeholder.com/60?text=Peace", url: "https://dzkyvlfyge.erbvr.com/PeaceTvBangla/tracks-v3a1/mono.m3u8?sid=s7AaNdTzDE2912wNcPLejQ" }
+            { name: "9XM (1080)", url: "https://9xjio.wiseplayout.com/9XM/master.m3u8" },
+            { name: "B4 MUSIC", url: "https://cdn-2.pishow.tv/live/415/master.m3u8" },
+            { name: "ETV MUSIC", url: "https://cc-szivnms4rlah6.akamaized.net/WWBI/Amagi/ETV_Music_IN/playlist.m3u8" },
+            { name: "MUSIC HINDI", url: "https://cdn-2.pishow.tv/live/226/master.m3u8" },
+            { name: "SANGEET BANGLA", url: "https://cdn-4.pishow.tv/live/1143/master.m3u8" },
+            { name: "AAKASH AATH", url: "https://mumt03.tangotv.in/Dsly5z3HAAKASHAATH/index.m3u8" },
+            { name: "Shemaree TV", url: "https://airtelapp.shemaroo.com/shemarootv/smil:shemarootvadp.smil/playlist.m3u8" },
+            { name: "ENTER 10 BANGLA", url: "https://live-bangla.akamaized.net/liveabr/playlist.m3u8" },
+            { name: "BIG MAGIC", url: "https://mumt05.tangotv.in/87NeALx2BIGMAGIC/index.m3u8" },
+            { name: "ATN BANGLA", url: "https://app.ncare.live/c3VydmVyX8RpbEU9Mi8xNy8yMDE0GIDU6RgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcGVMZEJCTEFWeVN3PTOmdFsaWRtaW51aiPhnPTI2/atnbanglauk-off.stream/playlist.m3u8" },
+            { name: "SRK TV", url: "https://srknowapp.ncare.live/srktvhlswodrm/srktv.stream/tracks-v1a1/mono.m3u8" },
+            { name: "DESH TV", url: "https://bozztv.com/rongo/rongo-DeshTV/index.m3u8" },
+            { name: "PEACE TV BANGLA", url: "https://dzkyvlfyge.erbvr.com/PeaceTvBangla/tracks-v3a1/mono.m3u8?sid=s7AaNdTzDE2912wNcPLejQ" },
+            { name: "DD SPORTS", url: "https://cdn-6.pishow.tv/live/13/master.m3u8" },
+            { name: "BEIN TV", url: "https://bein-esp-xumo.amagi.tv/playlistR1080p.m3u8" },
+            { name: "UFC TV", url: "https://linear-893.frequency.stream/mt/plex/893/hls/master/playlist_640x360.m3u8" },
+            { name: "MOVIE SPHERE", url: "https://moviesphereuk-samsunguk.amagi.tv/playlist.m3u8" },
+            { name: "SPORTS FISHING", url: "https://streams2.sofast.tv/v1/master/611d79b11b77e2f571934fd80ca1413453772ac7/eea68b79-bfe2-451e-a227-d637a5b9548a/manifest.m3u8" },
+            { name: "BBC NEWS", url: "https://dash2.antik.sk/live/test_bbc_world/playlist.m3u8" },
+            { name: "BALLE BALLE", url: "https://mcncdndigital.com/balleballetv/index.m3u8" },
+            { name: "SHEMAROOTV", url: "https://cdn-3.pishow.tv/live/230/master.m3u8" },
+            { name: "MOTU PATLU", url: "https://live20.bozztv.com/giatvplayout7/giatv-209622/tracks-v1a1/mono.ts.m3u8" },
+            { name: "BATUL THE", url: "https://live20.bozztv.com/giatvplayout7/giatv-209869/tracks-v1a1/mono.ts.m3u8" },
+            { name: "GOPAL BHAR", url: "https://live20.bozztv.com/giatvplayout7/giatv-209611/tracks-v1a1/mono.ts.m3u8" },
+            { name: "ZEE 24 GHANTA", url: "https://cdn-uw2-prod.tsv2.amagi.tv/linear/amg01412-xiaomiasia-zee24ghantaa-xiaomi/playlist.m3u8" },
+            { name: "FOX WEATHER", url: "https://247wlive.foxweather.com/stream/index.m3u8" },
+            { name: "T SPORTS HD", url: "http://198.195.239.50:8095/Tsports/index.m3u8" },
+            { name: "STAR SPORTS", url: "http://198.195.239.50:8095/StarSports2/index.m3u8" },
+            { name: "ZEE BANGLA", url: "http://198.195.239.50:8095/ZeeBanglaCinema/index.m3u8" },
+            { name: "SONY AATH", url: "http://198.195.239.50:8095/SonyAath/index.m3u8" },
+            { name: "SONY TV HD", url: "http://198.195.239.50:8095/SonyTv/index.m3u8" },
+            { name: "SONY MAX HD", url: "http://198.195.239.50:8095/SonyMAX/index.m3u8" },
+            { name: "STAR MOVIE", url: "http://198.195.239.50:8095/StarMovies/index.m3u8" },
+            { name: "GEE TV HD", url: "http://198.195.239.50:8095/ZeeTV/index.m3u8" },
+            { name: "DISCOVERY", url: "http://198.195.239.50:8095/Discovery/index.m3u8" },
+            { name: "DISCOVERY 2", url: "http://198.195.239.50:8095/DiscoveryKids/index.m3u8" },
+            { name: "OTT CLUB", url: "http://czrb8vng.ottclub.xyz/iptv/AHMQNVLWUTM5PW/6554/index.m3u8" },
+            { name: "DSPORTS 1", url: "http://201.230.121.85:8000/play/a0yv/index.m3u8" },
+            { name: "SPORT 2 HD", url: "http://88.212.15.19/live/test_sport_2/playlist.m3u8" },
+            { name: "SPORT 1 HD", url: "http://88.212.15.19/live/test_sport1_25p/playlist.m3u8" },
+            { name: "5 SPORT", url: "http://wo0dyefk.dienalt.org/iptv/DV3AC2Q6YSR9XE/2558/index.m3u8" },
+            { name: "FOX SPORTS", url: "http://y3fqd48g.megatv.fun/iptv/NRLXRWSBWBPLN4/19146/index.m3u8" },
+            { name: "G-SERIES", url: "https://vods2.aynaott.com/gseriesDrama/index.m3u8" },
+            { name: "RTV", url: "http://iptv.rtv-ooe.at/stream.m3u8" },
+            { name: "DESHI TV", url: "https://deshitv.deshitv24.net/live/myStream/playlist.m3u8" },
+            { name: "EKUSHEY TV", url: "https://master-proxy.wispy-boat-fc77.workers.dev/?url=https://ekusheyserver.com/hls-live/livepkgr/_definst_/liveevent/livestream3.m3u8" },
+            { name: "DEEPTO TV", url: "https://byphdgllyk.gpcdn.net/hls/DeeptoTV/index.m3u8" },
+            { name: "FIFA BEIN", url: "https://andro.226503.xyz/checklist/androstreamlivebiraz1.m3u8" },
+            { name: "FIFA CAZE TV", url: "https://dfr80qz435crc.cloudfront.net/MNOP/Amagi/Caze/Caze_TV_BR/1080p-vtt/index.m3u8" },
+            { name: "FB FIFA +", url: "https://c822c659.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/U2Ftc3VuZy1pbl9GSUZBUGx1c0VuZ2xpc2hfSExT/playlist.m3u8" },
+            { name: "IDMAN.TV", url: "https://str2.yodacdn.net/idman_300_to_small/tracks-v1a1/mono.m3u8" }
         ];
 
-        const channelList = document.getElementById('channel-list');
+        const listContainer = document.getElementById('channel-list');
         const player = videojs('main-player');
 
-        function loadChannels() {
-            channels.forEach((ch, index) => {
+        function render() {
+            channels.forEach((ch, i) => {
                 const card = document.createElement('div');
                 card.className = 'channel-card';
-                card.innerHTML = `
-                    <div class="logo-box">
-                        <img src="${ch.logo}" alt="" onerror="this.src='https://via.placeholder.com/60?text=TV'">
-                    </div>
-                    <div class="channel-name">${ch.name}</div>
-                `;
-                
+                card.innerHTML = `<div class="logo-box"><img src="https://via.placeholder.com/80/ffffff/000000?text=${ch.name.substring(0,2)}"></div><div class="channel-name">${ch.name}</div>`;
                 card.onclick = () => {
-                    // Active style toggle
                     document.querySelectorAll('.channel-card').forEach(c => c.classList.remove('active'));
                     card.classList.add('active');
-                    
-                    // Load and play video
                     player.src({ src: ch.url, type: 'application/x-mpegURL' });
                     player.play();
-                    
-                    // Smooth scroll to player
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 };
-
-                channelList.appendChild(card);
+                listContainer.appendChild(card);
             });
-
-            // শুরুতে প্রথম চ্যানেলটি লোড করে রাখা
-            if(channels.length > 0) {
-                player.src({ src: channels[0].url, type: 'application/x-mpegURL' });
-            }
         }
 
-        window.onload = loadChannels;
+        window.onload = () => {
+            render();
+            if(channels.length > 0) player.src({ src: channels[0].url, type: 'application/x-mpegURL' });
+        };
     </script>
 </body>
 </html>

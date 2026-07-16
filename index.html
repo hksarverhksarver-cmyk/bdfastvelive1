@@ -2,79 +2,156 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BD FAST TV V12.0</title>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BD FAST TV - V11.0</title>
+    <!-- Video.js for better player support -->
+    <link href="https://vjs.zencdn.net/7.20.3/video-js.css" rel="stylesheet" />
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: sans-serif; background: #000; color: #fff; max-width: 480px; margin: 0 auto; }
-        .header { background: #1a7a2e; padding: 12px; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 18px; font-weight: 900; }
-        .site-logo { width: 45px; height: 45px; border-radius: 50%; border: 2px solid #fff; }
-        .player-box { width: 100%; aspect-ratio: 16/9; background: #111; border-bottom: 3px solid #1a7a2e; }
-        video { width: 100%; height: 100%; }
-        #status { color: #00ff00; font-size: 13px; margin: 10px; text-align: center; font-weight: bold; }
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 15px; }
-        .card { background: #151515; border-radius: 10px; padding: 10px 5px; text-align: center; cursor: pointer; border: 1px solid #222; }
-        .thumb { width: 50px; height: 50px; margin: 0 auto 5px; background: #fff; border-radius: 50%; padding: 4px; display: flex; align-items: center; justify-content: center; }
-        .thumb img { max-width: 100%; max-height: 100%; }
-        .name { font-size: 10px; font-weight: bold; color: #ccc; text-transform: uppercase; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #0c0c0c; color: white; }
+
+        /* Header Area */
+        .header { background-color: #248b3b; padding: 15px; text-align: center; display: flex; align-items: center; justify-content: center; gap: 10px; position: sticky; top: 0; z-index: 1000; }
+        .header img { width: 40px; height: 40px; border-radius: 50%; background: white; }
+        .header h1 { font-size: 20px; }
+
+        /* Video Player Area */
+        .player-container { width: 100%; aspect-ratio: 16/9; background: #000; position: sticky; top: 70px; z-index: 999; border-bottom: 2px solid #248b3b; }
+        #main-player { width: 100%; height: 100%; }
+
+        /* Channel List Area */
+        .container { padding: 15px; }
+        .channel-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+        }
+
+        .channel-card {
+            background: #1a1a1a;
+            border-radius: 12px;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s, border 0.2s;
+            border: 1px solid #333;
+        }
+        .channel-card:hover { transform: scale(1.05); border-color: #248b3b; }
+        .channel-card.active { border-color: #248b3b; background: #248b3b22; }
+
+        .channel-card img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            background: white;
+            border-radius: 50%;
+            padding: 5px;
+            margin-bottom: 8px;
+        }
+        .channel-card p { font-size: 12px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        /* Responsive Mobile adjustment */
+        @media (max-width: 480px) {
+            .channel-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+            .channel-card img { width: 50px; height: 50px; }
+        }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <!-- আপনার অরিজিনাল লোগো লিঙ্ক -->
-        <img src="https://i.ibb.co/L5fX0Gg/BD-FAST-TV-Logo.png" class="site-logo">
-        BD FAST TV <span style="font-size: 10px; opacity: 0.6;">V12.0</span>
+        <img src="https://via.placeholder.com/40" alt="Logo">
+        <h1>BD FAST TV <span style="font-size: 12px;">V11.0</span></h1>
     </div>
 
-    <div class="player-box">
-        <video id="video" controls autoplay playsinline poster="https://i.ibb.co/L5fX0Gg/BD-FAST-TV-Logo.png"></video>
+    <!-- Video Player -->
+    <div class="player-container">
+        <video id="main-player" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto" data-setup='{}'>
+            <source src="" type="application/x-mpegURL">
+        </video>
     </div>
-    <div id="status">চ্যানেল সিলেক্ট করুন</div>
-    <div class="grid" id="grid"></div>
 
+    <div class="container">
+        <h3 style="margin-bottom: 15px; color: #248b3b;">লাইভ টিভি চ্যানেলসমূহ</h3>
+        <div class="channel-grid" id="channel-list">
+            <!-- Channels will be loaded here via JS -->
+        </div>
+    </div>
+
+    <!-- Video.js and HLS support -->
+    <script src="https://vjs.zencdn.net/7.20.3/video.min.js"></script>
     <script>
-        const proxy = "https://bdfast-proxy.sksunnysong143.workers.dev/?url=";
-
-        // লোগো লিঙ্কগুলো cdn.jsdelivr.net দিয়ে পরিবর্তন করা হয়েছে যেন ব্লক না হয়
+        // চ্যানেল লিস্ট (এখানে আপনার অরিজিনাল লিঙ্ক বসান)
         const channels = [
-            { name: "Test Channel", logo: "https://cdn-icons-png.flaticon.com/512/716/716429.png", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" },
-            { name: "Somoy TV", logo: "https://cdn.jsdelivr.net/gh/thebeastv/BDTV@main/Logos/SomoyTV.png", url: "https://somoytv-live.shofat.com/somoy/index.m3u8" },
-            { name: "Jamuna TV", logo: "https://cdn.jsdelivr.net/gh/thebeastv/BDTV@main/Logos/JamunaTV.png", url: "https://jamunatv-live.shofat.com/jamuna/index.m3u8" },
-            { name: "NTV", logo: "https://cdn.jsdelivr.net/gh/thebeastv/BDTV@main/Logos/NTV.png", url: "https://list.iptvcat.com/my_list/s/9d1072d7e3966132410c2e3cd9294dc8.m3u8" },
-            { name: "T Sports", logo: "https://cdn.jsdelivr.net/gh/thebeastv/BDTV@main/Logos/TSports.png", url: "https://tsports-live.shofat.com/tsports/index.m3u8" },
-            { name: "Independent", logo: "https://cdn.jsdelivr.net/gh/thebeastv/BDTV@main/Logos/IndependentTV.png", url: "https://live.itvbd.com/hls/itv_720p.m3u8" }
+            { name: "Somoy TV", logo: "https://upload.wikimedia.org/wikipedia/en/2/21/Somoy_TV_logo.png", url: "https://YOUR_STREAM_LINK_HERE.m3u8" },
+            { name: "Independent", logo: "https://upload.wikimedia.org/wikipedia/en/d/df/Independent_Television_logo.png", url: "URL_HERE" },
+            { name: "Jamuna TV", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/0/07/Jamuna_Television_logo.svg/1200px-Jamuna_Television_logo.svg.png", url: "URL_HERE" },
+            { name: "NTV", logo: "https://upload.wikimedia.org/wikipedia/commons/1/10/NTV_Logo.png", url: "URL_HERE" },
+            { name: "RTV", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/8/87/RTV_logo.svg/1200px-RTV_logo.svg.png", url: "URL_HERE" },
+            { name: "Channel i", logo: "https://upload.wikimedia.org/wikipedia/commons/c/c9/Channel_i_logo.png", url: "URL_HERE" },
+            { name: "Deepto TV", logo: "https://upload.wikimedia.org/wikipedia/en/3/36/Deepto_TV_logo.png", url: "URL_HERE" },
+            { name: "T Sports", logo: "https://upload.wikimedia.org/wikipedia/en/2/23/T_Sports_Logo.png", url: "URL_HERE" },
+            { name: "GTV", logo: "https://upload.wikimedia.org/wikipedia/en/3/3d/GTV_Bangladesh_logo.png", url: "URL_HERE" },
+            { name: "Maasranga TV", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/a/a2/Maasranga_Television_logo.svg/1200px-Maasranga_Television_logo.svg.png", url: "URL_HERE" },
+            { name: "News 24", logo: "https://upload.wikimedia.org/wikipedia/en/e/e0/News24_Bangladesh_Logo.png", url: "URL_HERE" },
+            { name: "Ekattor TV", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/8/8a/Ekattor_TV_logo.svg/1200px-Ekattor_TV_logo.svg.png", url: "URL_HERE" },
+            { name: "DBC News", logo: "https://upload.wikimedia.org/wikipedia/en/6/64/DBC_News_Logo.png", url: "URL_HERE" },
+            { name: "BTV", logo: "https://upload.wikimedia.org/wikipedia/en/4/4b/Bangladesh_Television_logo.png", url: "URL_HERE" },
+            { name: "Banglavision", logo: "https://upload.wikimedia.org/wikipedia/en/c/ca/Banglavision_Logo.png", url: "URL_HERE" },
+            { name: "ATN Bangla", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/4/40/ATN_Bangla_logo.svg/1200px-ATN_Bangla_logo.svg.png", url: "URL_HERE" },
+            { name: "ATN News", logo: "https://upload.wikimedia.org/wikipedia/en/c/c1/ATN_News_logo.png", url: "URL_HERE" },
+            { name: "Boishakhi TV", logo: "https://upload.wikimedia.org/wikipedia/en/e/e6/Boishakhi_TV_logo.png", url: "URL_HERE" },
+            { name: "Asian TV", logo: "https://upload.wikimedia.org/wikipedia/en/7/77/Asian_TV_Logo.png", url: "URL_HERE" },
+            { name: "SA TV", logo: "https://upload.wikimedia.org/wikipedia/en/1/18/SATV_logo.png", url: "URL_HERE" },
+            { name: "Channel 24", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/1/14/Channel_24_Logo.png/250px-Channel_24_Logo.png", url: "URL_HERE" },
+            { name: "Mohona TV", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/d/d4/Mohona_Television_logo.svg/1200px-Mohona_Television_logo.svg.png", url: "URL_HERE" },
+            { name: "Ekushey TV", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/b/b3/Ekushey_TV_logo.svg/1200px-Ekushey_TV_logo.svg.png", url: "URL_HERE" },
+            { name: "Duronto TV", logo: "https://upload.wikimedia.org/wikipedia/en/c/ca/Duronto_TV_logo.png", url: "URL_HERE" },
+            { name: "Bijoy TV", logo: "https://upload.wikimedia.org/wikipedia/en/4/42/Bijoy_TV_logo.png", url: "URL_HERE" },
+            { name: "Desh TV", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f0/Desh_TV_logo.svg/1200px-Desh_TV_logo.svg.png", url: "URL_HERE" },
+            { name: "My TV", logo: "https://upload.wikimedia.org/wikipedia/en/4/4c/MyTV_logo.png", url: "URL_HERE" },
+            { name: "Nagorik TV", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/9/9f/Nagorik_Logo.png/250px-Nagorik_Logo.png", url: "URL_HERE" },
+            { name: "Global TV", logo: "https://via.placeholder.com/60", url: "URL_HERE" },
+            { name: "Sony Sports 1", logo: "https://via.placeholder.com/60", url: "URL_HERE" },
+            { name: "Sony Sports 2", logo: "https://via.placeholder.com/60", url: "URL_HERE" },
+            { name: "Star Sports 1", logo: "https://via.placeholder.com/60", url: "URL_HERE" },
+            { name: "Star Sports 2", logo: "https://via.placeholder.com/60", url: "URL_HERE" },
+            { name: "Bein Sports", logo: "https://via.placeholder.com/60", url: "URL_HERE" }
         ];
 
-        const grid = document.getElementById('grid');
-        const video = document.getElementById('video');
-        const status = document.getElementById('status');
-        let hls = null;
+        const channelList = document.getElementById('channel-list');
+        const player = videojs('main-player');
 
-        channels.forEach(ch => {
+        // চ্যানেলগুলো রেন্ডার করা
+        channels.forEach((channel, index) => {
             const card = document.createElement('div');
-            card.className = 'card';
+            card.className = 'channel-card';
+            card.innerHTML = `
+                <img src="${channel.logo}" alt="${channel.name}" onerror="this.src='https://via.placeholder.com/60?text=TV'">
+                <p>${channel.name}</p>
+            `;
+            
             card.onclick = () => {
-                status.innerText = "লোডিং: " + ch.name;
-                const finalUrl = proxy + encodeURIComponent(ch.url);
-                if (hls) hls.destroy();
-                if (Hls.isSupported()) {
-                    hls = new Hls();
-                    hls.loadSource(finalUrl);
-                    hls.attachMedia(video);
-                    hls.on(Hls.Events.MANIFEST_PARSED, () => {
-                        video.play();
-                        status.innerText = "চলছে: " + name;
-                    });
-                } else {
-                    video.src = finalUrl;
-                    video.play();
-                }
+                // একটিভ ক্লাস সেট করা
+                document.querySelectorAll('.channel-card').forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
+
+                // প্লেয়ারে চ্যানেল লোড করা
+                player.src({
+                    src: channel.url,
+                    type: 'application/x-mpegURL'
+                });
+                player.play();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             };
-            card.innerHTML = `<div class="thumb"><img src="${ch.logo}"></div><div class="name">${ch.name}</div>`;
-            grid.appendChild(card);
+
+            channelList.appendChild(card);
         });
+
+        // ডিফল্ট ভাবে প্রথম চ্যানেলটি লোড করা
+        if(channels.length > 0) {
+            player.src({ src: channels[0].url, type: 'application/x-mpegURL' });
+        }
     </script>
 </body>
 </html>

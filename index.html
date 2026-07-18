@@ -217,4 +217,22 @@
 
         function filterCat(cat, btn) {
             activeCat = cat;
- 
+ document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderChannels();
+        }
+
+        function search() {
+            const query = document.getElementById('search-input').value;
+            renderChannels(query);
+        }
+
+        window.onload = () => {
+            renderChannels();
+            if(channels.length > 0) {
+                player.src({ src: channels[0].url, type: 'application/x-mpegURL' });
+            }
+        };
+    </script>
+</body>
+</html>
